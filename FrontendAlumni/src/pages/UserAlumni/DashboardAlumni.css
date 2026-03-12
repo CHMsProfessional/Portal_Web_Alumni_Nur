@@ -1,0 +1,541 @@
+.dashboard-alumni-page {
+    position: relative;
+    min-height: 100%;
+    color: var(--color-text, #e5eef7);
+    background:
+        radial-gradient(circle at top left, rgba(166, 124, 0, 0.12), transparent 24%),
+        linear-gradient(180deg, rgba(7, 12, 22, 0.96) 0%, rgba(10, 16, 28, 1) 100%);
+}
+
+.dashboard-alumni-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2.2rem 0 1.5rem;
+}
+
+.dashboard-alumni-hero__bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(255, 196, 0, 0.12), transparent 20%),
+        radial-gradient(circle at 86% 14%, rgba(255, 255, 255, 0.05), transparent 16%);
+}
+
+.dashboard-alumni-hero__container,
+.dashboard-alumni-main {
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-alumni-hero__content {
+    height: 100%;
+    padding: 1.85rem;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+        linear-gradient(180deg, rgba(15, 23, 39, 0.95) 0%, rgba(10, 16, 29, 0.98) 100%);
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+}
+
+.dashboard-alumni-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(255, 196, 0, 0.12);
+    border: 1px solid rgba(255, 196, 0, 0.16);
+    color: #ffd86b;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+}
+
+.dashboard-alumni-hero__title {
+    margin: 0 0 0.7rem;
+    font-size: clamp(1.85rem, 2.8vw, 2.8rem);
+    line-height: 1.12;
+    font-weight: 800;
+    color: #f8fbff;
+}
+
+.dashboard-alumni-hero__text {
+    margin: 0;
+    max-width: 760px;
+    color: rgba(226, 232, 240, 0.78);
+    line-height: 1.72;
+    font-size: 1rem;
+}
+
+.dashboard-alumni-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.3rem;
+}
+
+.dashboard-alumni-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin-top: 1.35rem;
+}
+
+.dashboard-alumni-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-alumni-stat-card__icon {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background:
+        linear-gradient(135deg, rgba(255, 196, 0, 0.16), rgba(255, 255, 255, 0.06));
+    color: #ffd86b;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.dashboard-alumni-stat-card strong {
+    display: block;
+    font-size: 1.25rem;
+    color: #f8fbff;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.dashboard-alumni-stat-card p {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.72);
+    font-size: 0.9rem;
+}
+
+.dashboard-alumni-refresh-badge {
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    color: #bfdbfe;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.dashboard-profile-card {
+    height: 100%;
+    padding: 1.6rem 1.35rem;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+        linear-gradient(180deg, rgba(15, 23, 39, 0.95) 0%, rgba(10, 16, 29, 0.98) 100%);
+    box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dashboard-profile-card__avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(135deg, rgba(255, 196, 0, 0.16), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 196, 0, 0.16);
+    color: #ffd86b;
+    font-size: 1.6rem;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-profile-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dashboard-profile-card__headline h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #f8fbff;
+}
+
+.dashboard-profile-card__role {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0.4rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(226, 232, 240, 0.84);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.dashboard-profile-card__admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 32px;
+    padding: 0.42rem 0.82rem;
+    border-radius: 999px;
+    background: rgba(255, 196, 0, 0.12);
+    border: 1px solid rgba(255, 196, 0, 0.16);
+    color: #ffd86b;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.dashboard-profile-card__meta {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.dashboard-profile-card__meta li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.95rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-profile-card__meta-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 196, 0, 0.1);
+    color: #ffd86b;
+    flex-shrink: 0;
+    font-size: 0.95rem;
+}
+
+.dashboard-profile-card__meta strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.88rem;
+    color: #f8fbff;
+}
+
+.dashboard-profile-card__meta span {
+    color: rgba(226, 232, 240, 0.76);
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.dashboard-alumni-main {
+    padding-bottom: 2.6rem;
+}
+
+.dashboard-section {
+    margin-top: 1.2rem;
+    padding: 1.4rem;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    background:
+        linear-gradient(180deg, rgba(14, 22, 38, 0.95) 0%, rgba(10, 16, 29, 0.98) 100%);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.dashboard-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dashboard-section__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.28rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffd86b;
+}
+
+.dashboard-section__title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fbff;
+}
+
+.dashboard-quick-grid,
+.dashboard-summary-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.dashboard-quick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-quick-card,
+.dashboard-summary-card {
+    border-radius: 22px;
+    padding: 1.15rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.028) 0%, rgba(255, 255, 255, 0.016) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.dashboard-quick-card:hover,
+.dashboard-summary-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 196, 0, 0.16);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.14);
+}
+
+.dashboard-quick-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dashboard-quick-card__icon,
+.dashboard-summary-card__icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(135deg, rgba(255, 196, 0, 0.15), rgba(255, 255, 255, 0.05));
+    color: #ffd86b;
+    font-size: 1.05rem;
+}
+
+.dashboard-quick-card__body h4,
+.dashboard-summary-card__head h4 {
+    margin: 0 0 0.35rem;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #f8fbff;
+}
+
+.dashboard-quick-card__body p,
+.dashboard-summary-card__head p {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.72);
+    line-height: 1.65;
+    font-size: 0.93rem;
+}
+
+.dashboard-quick-card__action,
+.dashboard-summary-card__link {
+    margin-top: auto;
+    border: none;
+    background: transparent;
+    color: #ffd86b;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 700;
+    padding: 0;
+    cursor: pointer;
+    transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-quick-card__action:hover,
+.dashboard-summary-card__link:hover {
+    color: #ffe8a3;
+    gap: 0.65rem;
+}
+
+.dashboard-summary-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.dashboard-summary-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-bottom: 0.95rem;
+}
+
+.dashboard-summary-card__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+}
+
+.dashboard-summary-card__list li {
+    padding: 0.8rem 0.9rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(237, 242, 247, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.5;
+    font-size: 0.92rem;
+}
+
+.dashboard-summary-card__empty {
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(226, 232, 240, 0.72);
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+
+.dashboard-alumni-feedback {
+    max-width: 760px;
+    margin: 0 auto;
+    border-radius: 22px;
+    padding: 1.2rem 1.25rem;
+    border: 1px solid transparent;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-alumni-feedback h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.12rem;
+    font-weight: 800;
+}
+
+.dashboard-alumni-feedback p {
+    margin: 0;
+    line-height: 1.65;
+}
+
+.dashboard-alumni-feedback--loading {
+    background: rgba(21, 34, 56, 0.94);
+    border-color: rgba(255, 255, 255, 0.07);
+    color: #eef5fb;
+}
+
+.dashboard-alumni-feedback--error {
+    background: rgba(80, 21, 29, 0.9);
+    border-color: rgba(248, 113, 113, 0.22);
+    color: #ffe8e8;
+}
+
+@media (max-width: 1199.98px) {
+    .dashboard-quick-grid,
+    .dashboard-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991.98px) {
+    .dashboard-alumni-hero {
+        padding: 1.6rem 0 1.15rem;
+    }
+
+    .dashboard-alumni-hero__content,
+    .dashboard-profile-card,
+    .dashboard-section {
+        border-radius: 24px;
+    }
+
+    .dashboard-alumni-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .dashboard-alumni-hero__content,
+    .dashboard-profile-card,
+    .dashboard-section {
+        padding: 1.1rem;
+    }
+
+    .dashboard-alumni-hero__title {
+        font-size: 1.6rem;
+    }
+
+    .dashboard-alumni-hero__text {
+        font-size: 0.95rem;
+    }
+
+    .dashboard-alumni-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dashboard-alumni-hero__actions .nur-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-quick-grid,
+    .dashboard-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-profile-card__headline h2 {
+        font-size: 1.28rem;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .dashboard-alumni-hero {
+        padding-top: 1.05rem;
+    }
+
+    .dashboard-alumni-hero__content,
+    .dashboard-profile-card,
+    .dashboard-section {
+        padding: 0.95rem;
+        border-radius: 20px;
+    }
+
+    .dashboard-alumni-hero__eyebrow {
+        font-size: 0.78rem;
+        padding: 0.52rem 0.8rem;
+    }
+
+    .dashboard-alumni-stat-card,
+    .dashboard-profile-card__meta li,
+    .dashboard-summary-card__list li {
+        padding: 0.85rem;
+    }
+}

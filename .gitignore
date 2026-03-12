@@ -1,0 +1,47 @@
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/.venv/
+**/venv/
+**/.pytest_cache/
+**/.mypy_cache/
+
+# Django runtime artifacts
+**/db.sqlite3
+**/media/
+**/staticfiles/
+
+# Frontend artifacts
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/coverage/
+
+# Local tooling
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+**/*.log
+logs/
+
+# Generated helper outputs
+**/estructura_src_*.txt
+
+# Local docker volumes and temp files
+postgres_data/
+
+# Local backups of nested repositories
+.git-frontend-backup/

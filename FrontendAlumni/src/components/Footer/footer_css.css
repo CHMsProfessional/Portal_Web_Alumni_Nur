@@ -1,0 +1,210 @@
+.nur-footer {
+  position: relative;
+  overflow: hidden;
+  margin-top: auto;
+  color: rgba(248, 250, 252, 0.94);
+  background:
+    radial-gradient(circle at top left, rgba(46, 107, 255, 0.18), transparent 26%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 20%),
+    linear-gradient(135deg, #0f172a 0%, #10295f 48%, #0b1220 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nur-footer__container {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-6);
+}
+
+.nur-footer__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.nur-footer__glow--left {
+  width: 220px;
+  height: 220px;
+  left: -60px;
+  top: -40px;
+  background: rgba(46, 107, 255, 0.28);
+}
+
+.nur-footer__glow--right {
+  width: 220px;
+  height: 220px;
+  right: -50px;
+  bottom: -90px;
+  background: rgba(249, 115, 22, 0.22);
+}
+
+.nur-footer__brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.nur-footer__brandBadge {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 1.35rem;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+}
+
+.nur-footer__title {
+  margin: 0 0 0.45rem;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.nur-footer__subtitle {
+  max-width: 520px;
+  color: rgba(226, 232, 240, 0.88);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+.nur-footer__pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nur-footer__sectionTitle {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.nur-footer__links,
+.nur-footer__contactList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nur-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.nur-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: rgba(226, 232, 240, 0.88);
+  font-size: var(--font-size-sm);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.nur-footer__link:hover {
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.nur-footer__link svg {
+  color: var(--color-secondary-400);
+  font-size: 0.9rem;
+}
+
+.nur-footer__contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nur-footer__contactList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.nur-footer__contactIcon {
+  margin-top: 0.15rem;
+  color: var(--color-secondary-400);
+  flex: 0 0 auto;
+}
+
+.nur-footer__bottom {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nur-footer__copy {
+  color: rgba(203, 213, 225, 0.88);
+  font-size: var(--font-size-sm);
+}
+
+.nur-footer__bottomBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(248, 250, 252, 0.94);
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nur-footer__helperText {
+  margin-top: 0.5rem;
+  color: rgba(226, 232, 240, 0.8);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .nur-footer__container {
+    padding-top: var(--space-8);
+  }
+
+  .nur-footer__brand {
+    gap: 0.85rem;
+  }
+
+  .nur-footer__brandBadge {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+  }
+
+  .nur-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,21 @@
+html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: fit-content !important;
+    background-color: radial-gradient(circle at top right, rgba(255, 193, 7, 0.1), transparent 24%),
+        radial-gradient(circle at top left, rgba(159, 32, 45, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(7, 12, 22, 0.98) 0%, rgba(10, 16, 28, 1) 100%) !important;
+}
+
+.main-content {
+    flex: 1;
+}
+
+

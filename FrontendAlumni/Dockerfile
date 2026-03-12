@@ -1,0 +1,31 @@
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+ARG VITE_API_BASE
+ARG VITE_API_ACCESS_URL
+ARG VITE_API_CONTENT_URL
+ARG VITE_WS_CONTENT_URL
+ARG VITE_CONTENT_MEDIA_URL
+ARG VITE_ACCESS_MEDIA_URL
+
+ENV VITE_API_BASE=${VITE_API_BASE} \
+    VITE_API_ACCESS_URL=${VITE_API_ACCESS_URL} \
+    VITE_API_CONTENT_URL=${VITE_API_CONTENT_URL} \
+    VITE_WS_CONTENT_URL=${VITE_WS_CONTENT_URL} \
+    VITE_CONTENT_MEDIA_URL=${VITE_CONTENT_MEDIA_URL} \
+    VITE_ACCESS_MEDIA_URL=${VITE_ACCESS_MEDIA_URL}
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

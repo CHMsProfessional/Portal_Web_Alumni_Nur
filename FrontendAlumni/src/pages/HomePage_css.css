@@ -1,0 +1,456 @@
+.home-nur {
+    --home-bg: var(--nur-color-bg, #0b1220);
+    --home-surface: var(--nur-color-surface, #111a2e);
+    --home-surface-soft: var(--nur-color-surface-soft, #18233b);
+    --home-surface-elevated: var(--nur-color-surface-elevated, #1d2943);
+    --home-border: var(--nur-color-border, rgba(255, 255, 255, 0.1));
+    --home-text: var(--nur-color-text, #eef3fb);
+    --home-text-soft: var(--nur-color-text-soft, #c5d0e0);
+    --home-text-muted: var(--nur-color-text-muted, #94a3b8);
+    --home-primary: var(--nur-color-primary, #c8a45d);
+    --home-accent: var(--nur-color-accent, #7aa2ff);
+    --home-shadow: var(--nur-shadow-lg, 0 24px 60px rgba(0, 0, 0, 0.28));
+    --home-radius-xl: var(--nur-radius-xl, 28px);
+    --home-radius-lg: var(--nur-radius-lg, 22px);
+    --home-radius-md: var(--nur-radius-md, 16px);
+
+    background:
+        radial-gradient(circle at top right, rgba(200, 164, 93, 0.09), transparent 20%),
+        radial-gradient(circle at bottom left, rgba(122, 162, 255, 0.08), transparent 24%),
+        linear-gradient(180deg, #08101c 0%, #0b1220 38%, #0d1526 100%);
+    color: var(--home-text);
+    min-height: 100vh;
+}
+
+.home-nur__hero {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0 1rem;
+}
+
+.home-nur__heroOverlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(4, 10, 18, 0.15), rgba(4, 10, 18, 0.45)),
+        radial-gradient(circle at top center, rgba(200, 164, 93, 0.08), transparent 28%);
+    pointer-events: none;
+}
+
+.home-nur__heroContainer,
+.home-nur__section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.home-nur__heroGrid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.home-nur__heroPanel {
+    background: linear-gradient(180deg, rgba(22, 31, 50, 0.92), rgba(15, 24, 40, 0.96));
+    border: 1px solid var(--home-border);
+    border-radius: var(--home-radius-xl);
+    box-shadow: var(--home-shadow);
+    padding: 1.5rem;
+    min-height: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.home-nur__heroPanel--center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.home-nur__panelBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(200, 164, 93, 0.12);
+    border: 1px solid rgba(200, 164, 93, 0.25);
+    color: var(--home-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.home-nur__heroTitle {
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.12;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    color: var(--home-text);
+}
+
+.home-nur__heroText,
+.home-nur__sideText,
+.home-nur__sectionText,
+.home-nur__featureCard p,
+.home-nur__ctaCard p {
+    color: var(--home-text-soft);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.home-nur__heroBullets,
+.home-nur__benefitsList {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.home-nur__heroBullets li,
+.home-nur__benefitsList li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: var(--home-text-soft);
+}
+
+.home-nur__heroBullets svg,
+.home-nur__benefitsList svg {
+    color: var(--home-primary);
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.home-nur__heroActions,
+.home-nur__ctaActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 1.35rem;
+}
+
+.home-nur__logoBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem;
+    border: 1px solid var(--home-border);
+    border-radius: calc(var(--home-radius-xl) - 6px);
+    background:
+        radial-gradient(circle at center, rgba(200, 164, 93, 0.08), transparent 42%),
+        linear-gradient(180deg, rgba(19, 28, 45, 0.92), rgba(14, 20, 34, 0.96));
+}
+
+.home-nur__logo {
+    width: min(220px, 70%);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.28));
+}
+
+.home-nur__logoText h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--home-text);
+}
+
+.home-nur__logoText p {
+    margin: 0.45rem 0 0;
+    color: var(--home-text-muted);
+    line-height: 1.65;
+}
+
+.home-nur__sideTitle {
+    font-size: 1.55rem;
+    line-height: 1.25;
+    font-weight: 800;
+    margin: 0 0 0.9rem;
+    color: var(--home-text);
+}
+
+.home-nur__sideList {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 1.25rem;
+}
+
+.home-nur__sideList article {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.95rem 1rem;
+    border-radius: var(--home-radius-md);
+    border: 1px solid var(--home-border);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.home-nur__sideList article svg {
+    color: var(--home-accent);
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.home-nur__sideList strong {
+    display: block;
+    color: var(--home-text);
+    margin-bottom: 0.18rem;
+}
+
+.home-nur__sideList span {
+    color: var(--home-text-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.home-nur__section {
+    padding: 1.4rem 0 1.2rem;
+}
+
+.home-nur__section--soft {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.025));
+    border-top: 1px solid rgba(255, 255, 255, 0.025);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.025);
+}
+
+.home-nur__sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.home-nur__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.55rem;
+    color: var(--home-primary);
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.home-nur__sectionTitle {
+    font-size: clamp(1.6rem, 2.3vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: var(--home-text);
+}
+
+.home-nur__featureCard {
+    height: 100%;
+    background: linear-gradient(180deg, rgba(19, 28, 45, 0.94), rgba(14, 21, 35, 0.98));
+    border: 1px solid var(--home-border);
+    border-radius: var(--home-radius-lg);
+    box-shadow: var(--home-shadow);
+    padding: 1.3rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-nur__featureIcon {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(200, 164, 93, 0.12);
+    color: var(--home-primary);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.home-nur__featureCard h3 {
+    margin: 0 0 0.6rem;
+    color: var(--home-text);
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.home-nur__featureAction {
+    border: none;
+    background: transparent;
+    color: var(--home-primary);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+    margin-top: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.home-nur__featureAction:hover {
+    transform: translateX(2px);
+    color: #e1bc75;
+}
+
+.home-nur__highlight {
+    border: 1px solid var(--home-border);
+    border-radius: var(--home-radius-xl);
+    box-shadow: var(--home-shadow);
+    background: linear-gradient(180deg, rgba(20, 30, 48, 0.96), rgba(15, 22, 35, 0.98));
+    padding: 1.6rem;
+}
+
+.home-nur__ctaCard {
+    background: linear-gradient(180deg, rgba(23, 34, 55, 0.96), rgba(16, 23, 37, 0.98));
+    border: 1px solid var(--home-border);
+    border-radius: var(--home-radius-lg);
+    box-shadow: var(--home-shadow);
+    padding: 1.3rem;
+    height: 100%;
+}
+
+.home-nur__ctaIcon {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(200, 164, 93, 0.14);
+    color: var(--home-primary);
+    font-size: 1.45rem;
+    margin-bottom: 1rem;
+}
+
+.home-nur__ctaCard h3 {
+    margin: 0 0 0.65rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--home-text);
+}
+
+.home-nur__sliderWrap {
+    padding: 0.35rem 0 0.1rem;
+}
+
+.nur-loader-block {
+    min-height: 220px;
+    border-radius: var(--home-radius-lg);
+    border: 1px solid var(--home-border);
+    background: linear-gradient(180deg, rgba(20, 29, 47, 0.94), rgba(14, 20, 33, 0.98));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    box-shadow: var(--home-shadow);
+}
+
+.nur-loader-spinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.08);
+    border-top-color: var(--home-primary);
+    animation: home-nur-spin 0.9s linear infinite;
+}
+
+@keyframes home-nur-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nur-empty-state {
+    min-height: 250px;
+    border-radius: var(--home-radius-lg);
+    border: 1px solid var(--home-border);
+    background: linear-gradient(180deg, rgba(20, 29, 47, 0.94), rgba(14, 20, 33, 0.98));
+    box-shadow: var(--home-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    text-align: center;
+    padding: 2rem 1.2rem;
+}
+
+.nur-empty-state__icon {
+    font-size: 2rem;
+    color: var(--home-text-muted);
+}
+
+.nur-empty-state__title {
+    margin: 0;
+    color: var(--home-text);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.nur-empty-state__text,
+.nur-text-secondary {
+    color: var(--home-text-muted);
+}
+
+.nur-alert--warning {
+    border-radius: var(--home-radius-md);
+    border: 1px solid rgba(217, 107, 107, 0.25);
+    background: rgba(217, 107, 107, 0.08);
+    color: #f1d2d2;
+    padding: 1rem 1.1rem;
+}
+
+@media (max-width: 1399px) {
+    .home-nur__heroGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-nur__heroPanel--center {
+        text-align: left;
+    }
+
+    .home-nur__logoBlock {
+        align-items: flex-start;
+    }
+
+    .home-nur__logo {
+        width: min(200px, 55%);
+    }
+}
+
+@media (max-width: 991px) {
+    .home-nur__sectionHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 767px) {
+    .home-nur__hero {
+        padding-top: 1.2rem;
+    }
+
+    .home-nur__heroPanel,
+    .home-nur__highlight,
+    .home-nur__featureCard,
+    .home-nur__ctaCard {
+        padding: 1rem;
+    }
+
+    .home-nur__heroTitle {
+        font-size: 1.7rem;
+    }
+
+    .home-nur__sideTitle,
+    .home-nur__sectionTitle {
+        font-size: 1.35rem;
+    }
+
+    .home-nur__heroActions,
+    .home-nur__ctaActions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

@@ -1,0 +1,93 @@
+/* CategoriaSliderAdaptable.css */
+.slider-container {
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #001f3f;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.slider-title {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.slider-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: transform 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+}
+
+.slider-card:hover {
+    transform: scale(1.03);
+}
+
+.slider-img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    height: 400px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.slider-info h4, .slider-info h5, .slider-info h6 {
+    font-weight: bold;
+    color: #ffc107;
+}
+
+.slider-info p {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.slider-documento .slider-card {
+    min-width: 180px;
+    max-width: 240px;
+}
+
+.slider-evento .slider-card {
+    min-width: 360px;
+}
+
+.slider-testimonio .keen-slider__slide {
+    height: auto;
+}
+
+.noticia-card {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05);
+}
+
+.noticia-card:hover {
+    transform: scale(1.03);
+}
+
+.noticia-card img {
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 3px solid #ffc107;
+}
+
+.noticia-card .card-body {
+    border-radius: 0 0 1rem 1rem;
+    background-color: rgba(0, 0, 0, 0.85);
+}
+
+.slider-noticia .keen-slider__slide {
+    min-width: 300px;
+}
+

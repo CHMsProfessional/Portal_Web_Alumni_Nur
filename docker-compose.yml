@@ -1,0 +1,100 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+      ACCESS_DB_NAME: ${ACCESS_DB_NAME:-AlumniDBAccess}
+      CONTENT_DB_NAME: ${CONTENT_DB_NAME:-AlumniDB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  access-api:
+    build:
+      context: ./AlumniAPI
+    restart: unless-stopped
+    env_file:
+      - ./AlumniAPI/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${ACCESS_DB_NAME:-AlumniDBAccess}
+      CONTENT_API_URL: http://content-api:8001/api/
+      CONTENT_API_BASE_URL: http://content-api:8001/
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,access-api
+      DJANGO_ALLOWED_ORIGINS: http://localhost:${FRONTEND_PUBLIC_PORT:-8080}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${ACCESS_PUBLIC_PORT:-8000}:8000"
+
+  content-api:
+    build:
+      context: ./ContenidoAlumniApi
+    restart: unless-stopped
+    env_file:
+      - ./ContenidoAlumniApi/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${CONTENT_DB_NAME:-AlumniDB}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ACCESS_API_URL: http://access-api:8000/api/
+      ACCESS_API_BASE_URL: http://access-api:8000/
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,content-api
+      DJANGO_ALLOWED_ORIGINS: http://localhost:${FRONTEND_PUBLIC_PORT:-8080}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      access-api:
+        condition: service_started
+    ports:
+      - "${CONTENT_PUBLIC_PORT:-8001}:8001"
+    volumes:
+      - content_media:/app/media
+
+  frontend:
+    build:
+      context: "./FrontendAlumni"
+      args:
+        VITE_API_BASE: ${FRONTEND_VITE_API_BASE:-http://localhost:8001/api}
+        VITE_API_ACCESS_URL: ${FRONTEND_VITE_API_ACCESS_URL:-http://localhost:8000/api/}
+        VITE_API_CONTENT_URL: ${FRONTEND_VITE_API_CONTENT_URL:-http://localhost:8001/api/}
+        VITE_WS_CONTENT_URL: ${FRONTEND_VITE_WS_CONTENT_URL:-ws://localhost:8001}
+        VITE_CONTENT_MEDIA_URL: ${FRONTEND_VITE_CONTENT_MEDIA_URL:-http://localhost:8001}
+        VITE_ACCESS_MEDIA_URL: ${FRONTEND_VITE_ACCESS_MEDIA_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      access-api:
+        condition: service_started
+      content-api:
+        condition: service_started
+    ports:
+      - "${FRONTEND_PUBLIC_PORT:-8080}:80"
+
+volumes:
+  postgres_data:
+  content_media:

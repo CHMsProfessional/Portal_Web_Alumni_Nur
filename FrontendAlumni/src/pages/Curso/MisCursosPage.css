@@ -1,0 +1,473 @@
+.mis-cursos-page {
+    --mcp-bg: var(--nur-color-bg, #0b1220);
+    --mcp-surface: var(--nur-color-surface, #111a2e);
+    --mcp-surface-soft: var(--nur-color-surface-soft, #18233b);
+    --mcp-surface-elevated: var(--nur-color-surface-elevated, #1d2943);
+    --mcp-border: var(--nur-color-border, rgba(255, 255, 255, 0.1));
+    --mcp-border-strong: var(--nur-color-border-strong, rgba(255, 255, 255, 0.16));
+    --mcp-text: var(--nur-color-text, #eef3fb);
+    --mcp-text-soft: var(--nur-color-text-soft, #c5d0e0);
+    --mcp-text-muted: var(--nur-color-text-muted, #94a3b8);
+    --mcp-primary: var(--nur-color-primary, #c8a45d);
+    --mcp-accent: var(--nur-color-accent, #7aa2ff);
+    --mcp-danger: var(--nur-color-danger, #d96b6b);
+    --mcp-success: #3fb983;
+
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top right, rgba(200, 164, 93, 0.08), transparent 22%),
+        radial-gradient(circle at top left, rgba(122, 162, 255, 0.06), transparent 26%),
+        linear-gradient(180deg, #08101c 0%, #0b1220 40%, #0d1526 100%);
+    color: var(--mcp-text);
+}
+
+.mis-cursos-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 0 2rem;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(14, 21, 34, 0.98) 0%,
+            rgba(17, 26, 46, 0.98) 44%,
+            rgba(10, 17, 30, 0.99) 100%
+        );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mis-cursos-hero::before,
+.mis-cursos-hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+    filter: blur(22px);
+    opacity: 0.28;
+}
+
+.mis-cursos-hero::before {
+    width: 18rem;
+    height: 18rem;
+    right: -4rem;
+    top: -5rem;
+    background: rgba(200, 164, 93, 0.16);
+}
+
+.mis-cursos-hero::after {
+    width: 13rem;
+    height: 13rem;
+    left: -3rem;
+    bottom: -4rem;
+    background: rgba(122, 162, 255, 0.12);
+}
+
+.mis-cursos-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.mis-cursos-hero__content {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 1.4rem;
+}
+
+.mis-cursos-hero__copy {
+    max-width: 48rem;
+}
+
+.mis-cursos-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(200, 164, 93, 0.14);
+    color: #ffe08a;
+    font-size: 0.88rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.mis-cursos-hero__title {
+    margin: 0 0 0.8rem;
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.08;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.mis-cursos-hero__text {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.84);
+    line-height: 1.72;
+    max-width: 46rem;
+}
+
+.mis-cursos-hero__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.mis-cursos-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.mis-cursos-stat {
+    padding: 1rem 1.1rem;
+    border-radius: 1.15rem;
+    background: rgba(17, 26, 46, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 18px 36px rgba(2, 8, 23, 0.24);
+}
+
+.mis-cursos-stat__label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mcp-text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.mis-cursos-stat__value {
+    display: block;
+    font-size: 1.65rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.mis-cursos-admin-note {
+    margin-top: 1rem;
+    padding: 0.95rem 1rem;
+    border-radius: 1rem;
+    background: rgba(122, 162, 255, 0.1);
+    border: 1px solid rgba(122, 162, 255, 0.18);
+    color: #dbe7ff;
+    line-height: 1.6;
+    font-size: 0.94rem;
+}
+
+.mis-cursos-content {
+    padding: 1.8rem 0 3rem;
+}
+
+.mis-cursos-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: rgba(17, 26, 46, 0.88);
+    border-radius: 1.25rem;
+    border: 1px solid var(--mcp-border);
+    box-shadow: 0 20px 44px rgba(2, 8, 23, 0.26);
+    backdrop-filter: blur(8px);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mis-cursos-toolbar__search label,
+.mis-cursos-toolbar__filter label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--mcp-text-soft);
+}
+
+.mis-cursos-toolbar__search label svg {
+    color: var(--mcp-primary);
+}
+
+.mis-cursos-toolbar__filters {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.mis-cursos-toolbar__actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mis-cursos-page .form-control,
+.mis-cursos-page .form-select {
+    min-height: 3rem;
+    border-radius: 0.95rem;
+    border: 1px solid var(--mcp-border-strong);
+    background: rgba(8, 16, 28, 0.82);
+    color: var(--mcp-text);
+    box-shadow: none;
+}
+
+.mis-cursos-page .form-control::placeholder {
+    color: rgba(148, 163, 184, 0.82);
+}
+
+.mis-cursos-page .form-select option {
+    color: #0f172a;
+}
+
+.mis-cursos-page .form-control:focus,
+.mis-cursos-page .form-select:focus {
+    border-color: rgba(200, 164, 93, 0.44);
+    box-shadow: 0 0 0 0.22rem rgba(200, 164, 93, 0.14);
+    background: rgba(10, 18, 32, 0.92);
+    color: var(--mcp-text);
+}
+
+.mis-cursos-alert,
+.mis-cursos-feedback,
+.mis-cursos-empty {
+    text-align: center;
+    padding: 2rem 1.25rem;
+    border-radius: 1.25rem;
+    background: rgba(17, 26, 46, 0.9);
+    border: 1px solid var(--mcp-border);
+    box-shadow: 0 20px 45px rgba(2, 8, 23, 0.22);
+    color: var(--mcp-text);
+}
+
+.mis-cursos-alert {
+    color: #ffd2d2;
+    background: rgba(78, 23, 30, 0.92);
+    border-color: rgba(217, 107, 107, 0.3);
+}
+
+.mis-cursos-empty svg {
+    font-size: 2rem;
+    color: var(--mcp-primary);
+    margin-bottom: 0.85rem;
+}
+
+.mis-cursos-empty h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.mis-cursos-empty p {
+    margin: 0 0 1rem;
+    color: var(--mcp-text-muted);
+}
+
+.mis-cursos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.mis-curso-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background: rgba(17, 26, 46, 0.92);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--mcp-border);
+    box-shadow: 0 22px 46px rgba(2, 8, 23, 0.24);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.mis-curso-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 56px rgba(2, 8, 23, 0.3);
+    border-color: rgba(200, 164, 93, 0.24);
+}
+
+.mis-curso-card__media {
+    position: relative;
+    height: 14rem;
+    overflow: hidden;
+    background: #10192c;
+}
+
+.mis-curso-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mis-curso-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(4, 8, 15, 0.08) 0%, rgba(4, 8, 15, 0.56) 100%);
+}
+
+.mis-curso-card__badges {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
+}
+
+.mis-curso-card__status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(2, 8, 23, 0.25);
+}
+
+.mis-curso-card__status--activo {
+    color: #dffcf1;
+    background: rgba(63, 185, 131, 0.9);
+}
+
+.mis-curso-card__status--finalizado {
+    color: #ecf2ff;
+    background: rgba(122, 162, 255, 0.9);
+}
+
+.mis-curso-card__status--cancelado {
+    color: #fff1f1;
+    background: rgba(217, 107, 107, 0.92);
+}
+
+.mis-curso-card__status--inactivo,
+.mis-curso-card__status--sin-estado {
+    color: #f8fafc;
+    background: rgba(100, 116, 139, 0.92);
+}
+
+.mis-curso-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1.2rem;
+    flex: 1;
+}
+
+.mis-curso-card__top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.mis-curso-card__title {
+    margin: 0;
+    font-size: 1.16rem;
+    line-height: 1.3;
+    font-weight: 800;
+    color: var(--mcp-text);
+}
+
+.mis-curso-card__modalidad {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: fit-content;
+    padding: 0.5rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(200, 164, 93, 0.12);
+    color: #f3dcaa;
+    border: 1px solid rgba(200, 164, 93, 0.2);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.mis-curso-card__description {
+    margin: 0;
+    color: var(--mcp-text-soft);
+    line-height: 1.68;
+    font-size: 0.95rem;
+}
+
+.mis-curso-card__meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+}
+
+.mis-curso-card__metaItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--mcp-text-muted);
+    font-size: 0.9rem;
+}
+
+.mis-curso-card__metaItem svg {
+    color: var(--mcp-primary);
+    flex-shrink: 0;
+}
+
+.mis-curso-card__footer {
+    margin-top: auto;
+    padding-top: 0.25rem;
+}
+
+.mis-curso-card__footer .nur-btn {
+    width: 100%;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+@media (max-width: 1200px) {
+    .mis-cursos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 992px) {
+    .mis-cursos-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mis-cursos-toolbar__filters {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .mis-cursos-toolbar__actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .mis-cursos-content {
+        padding: 1.4rem 0 2.5rem;
+    }
+
+    .mis-cursos-stats,
+    .mis-cursos-toolbar__filters {
+        grid-template-columns: 1fr;
+    }
+
+    .mis-cursos-hero__actions {
+        width: 100%;
+    }
+
+    .mis-cursos-hero__actions > * {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .mis-cursos-hero {
+        padding: 2.4rem 0 1.8rem;
+    }
+
+    .mis-cursos-hero__title {
+        font-size: 1.9rem;
+    }
+
+    .mis-curso-card__body {
+        padding: 1rem;
+    }
+}

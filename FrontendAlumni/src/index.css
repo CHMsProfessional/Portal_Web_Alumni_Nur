@@ -1,0 +1,465 @@
+@import "./styles/tokens.css";
+@import "./styles/base.css";
+@import "./styles/layout.css";
+@import "./styles/utilities.css";
+@import "./styles/components.css";
+
+/* =========================================
+   Puente global entre Bootstrap y sistema NUR
+   Este archivo debe mantenerse pequeño:
+   - importa la base visual
+   - define reglas globales de compatibilidad
+   - evita meter estilos de páginas aquí
+========================================= */
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* =========================================
+   Fondos y helpers institucionales globales
+========================================= */
+.bg-nur-dark {
+  background:
+    radial-gradient(circle at top left, rgba(46, 107, 255, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 22%),
+    linear-gradient(135deg, #10295f 0%, #123dab 42%, #0f172a 100%);
+  color: var(--text-on-dark);
+}
+
+.bg-nur-light {
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+}
+
+.text-nur {
+  color: var(--color-primary-700) !important;
+}
+
+.text-nur-soft {
+  color: var(--color-primary-500) !important;
+}
+
+.text-nur-accent {
+  color: var(--color-secondary-600) !important;
+}
+
+.border-nur {
+  border-color: rgba(46, 107, 255, 0.22) !important;
+}
+
+/* =========================================
+   Containers y shell genérico
+========================================= */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-shell {
+  flex: 1;
+}
+
+.page-surface {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+
+/* =========================================
+   Tarjetas Bootstrap armonizadas
+========================================= */
+.card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  background: var(--bg-surface-strong);
+}
+
+.card-title {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.card-text {
+  color: var(--text-secondary);
+}
+
+.card-footer {
+  background: rgba(248, 250, 252, 0.72);
+  border-top: 1px solid var(--border-color);
+}
+
+/* =========================================
+   Botones Bootstrap armonizados
+========================================= */
+.btn {
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-semibold);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-500));
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(25, 79, 217, 0.22);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background: linear-gradient(135deg, var(--color-primary-800), var(--color-primary-600));
+  border-color: transparent;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffcc42, #ffb020);
+  border-color: transparent;
+  box-shadow: 0 10px 24px rgba(255, 176, 32, 0.18);
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+  background: linear-gradient(135deg, #ffbf1f, #f59e0b);
+  border-color: transparent;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-color: transparent;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  border-color: transparent;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  border-color: transparent;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  border-color: transparent;
+}
+
+.btn-outline-primary {
+  color: var(--color-primary-700);
+  border-color: rgba(46, 107, 255, 0.3);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background: rgba(46, 107, 255, 0.08);
+  color: var(--color-primary-800);
+  border-color: rgba(46, 107, 255, 0.45);
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: rgba(100, 116, 139, 0.28);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  background: rgba(15, 23, 42, 0.04);
+  color: var(--text-primary);
+  border-color: rgba(71, 85, 105, 0.35);
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus,
+.btn-outline-warning:active {
+  background: rgba(245, 158, 11, 0.08);
+  color: #7c2d12;
+}
+
+/* =========================================
+   Formularios Bootstrap armonizados
+========================================= */
+.form-control,
+.form-select {
+  min-height: var(--input-height);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+.form-control::placeholder {
+  color: var(--input-placeholder);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--focus-ring);
+}
+
+.form-label {
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.45rem;
+}
+
+.form-check-input {
+  border-color: rgba(148, 163, 184, 0.55);
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+}
+
+.form-check-input:focus {
+  box-shadow: var(--focus-ring);
+}
+
+/* =========================================
+   React Select base
+========================================= */
+.select__control {
+  min-height: var(--input-height) !important;
+  border-radius: var(--radius-md) !important;
+  border-color: var(--input-border) !important;
+  background: var(--input-bg) !important;
+  box-shadow: none !important;
+}
+
+.select__control--is-focused {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: var(--focus-ring) !important;
+}
+
+.select__menu {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.select__option--is-focused {
+  background: rgba(46, 107, 255, 0.08) !important;
+}
+
+.select__option--is-selected {
+  background: var(--color-primary-600) !important;
+}
+
+.select__multi-value {
+  background: rgba(46, 107, 255, 0.12) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.select__multi-value__label {
+  color: var(--color-primary-800) !important;
+  font-weight: var(--font-weight-medium);
+}
+
+/* =========================================
+   Badges y estados
+========================================= */
+.badge {
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-semibold);
+  padding: 0.5rem 0.8rem;
+}
+
+.alert {
+  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+.alert-info {
+  background: var(--color-info-50);
+  color: var(--color-info-700);
+}
+
+.alert-success {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.alert-warning {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+.alert-danger {
+  background: var(--color-danger-50);
+  color: var(--color-danger-700);
+}
+
+.spinner-border.text-warning {
+  color: var(--color-secondary-500) !important;
+}
+
+/* =========================================
+   Tablas Bootstrap armonizadas
+========================================= */
+.table-nur {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(46, 107, 255, 0.025);
+  --bs-table-hover-bg: rgba(46, 107, 255, 0.045);
+  border-color: rgba(226, 232, 240, 0.85);
+}
+
+.table-nur thead th {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(15, 23, 42, 0.035);
+}
+
+.table-responsive {
+  border-radius: var(--radius-2xl);
+}
+
+/* =========================================
+   Modales Bootstrap armonizados
+========================================= */
+.modal-content {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--border-color);
+}
+
+.modal-header {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.modal-title {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+/* =========================================
+   Utilidades globales de secciones
+========================================= */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: var(--space-4);
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.surface-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.soft-divider {
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  margin: var(--space-8) 0;
+}
+
+/* =========================================
+   Imágenes placeholder consistentes
+========================================= */
+.image-placeholder-surface {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  background:
+    radial-gradient(circle at center, rgba(46, 107, 255, 0.08), transparent 55%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
+  color: var(--color-primary-700);
+}
+
+/* =========================================
+   Accesibilidad / motion
+========================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================
+   Responsive global
+========================================= */
+@media (max-width: 992px) {
+  .container,
+  .container-md,
+  .container-lg,
+  .container-xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .btn {
+    min-height: 42px;
+  }
+
+  .badge {
+    padding: 0.45rem 0.72rem;
+  }
+
+  .modal-dialog {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}

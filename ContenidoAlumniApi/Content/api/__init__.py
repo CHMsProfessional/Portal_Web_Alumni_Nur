@@ -1,0 +1,10 @@
+from .curso_viewset import CursoViewSet, CursoSerializer
+from .evento_viewset import EventoViewSet, EventoSerializer
+from .comunidad_viewset import ComunidadViewSet, ComunidadSerializer
+from .documento_viewset import DocumentoViewSet, DocumentoSerializer
+from .testimonio_viewset import TestimonioViewSet, TestimonioSerializer
+from .noticia_viewset import NoticiaViewSet, NoticiaSerializer
+from .servicio_alumni_viewset import ServicioAlumniViewSet, ServicioAlumniSerializer
+from .mensaje_comunidadd_viewset import MensajeComunidadViewSet, MensajeComunidadSerializer
+from .conversacion_comunidad_viewset import ConversacionComunidadViewSet, ConversacionComunidadSerializer
+from .mensaje_conversacion_viewset import MensajeConversacionViewSet, MensajeConversacionSerializer
