@@ -159,7 +159,10 @@ class EventoSerializer(serializers.ModelSerializer):
         if not user or not getattr(user, "is_authenticated", False):
             return False
 
-        return int(getattr(user, "id", 0)) in (obj.usuarios or [])
+        alumni_id = getattr(user, "alumni_id", None)
+        if alumni_id is None:
+            return False
+        return int(alumni_id) in (obj.usuarios or [])
 
     def get_alcance(self, obj):
         return "GLOBAL" if not (obj.carreras or []) else "CARRERAS"
@@ -302,7 +305,7 @@ class EventoViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        raw_user_id = request.data.get("user_id", getattr(request.user, "id", None))
+        raw_user_id = request.data.get("user_id", getattr(request.user, "alumni_id", None))
 
         try:
             user_id = int(raw_user_id)
@@ -313,7 +316,7 @@ class EventoViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
             )
 
         es_admin = bool(getattr(request.user, "is_admin", False))
-        if not es_admin and user_id != int(getattr(request.user, "id")):
+        if not es_admin and user_id != int(getattr(request.user, "alumni_id") or 0):
             return None, Response(
                 {"error": "No tiene permisos para gestionar la inscripción de otro usuario."},
                 status=status.HTTP_403_FORBIDDEN,

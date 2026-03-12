@@ -39,6 +39,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             token[key] = value
 
         token["is_admin"] = bool(getattr(user, "is_superuser", False))
+
+        try:
+            token["user_alumni_id"] = user.useralumni.id
+        except UserAlumni.DoesNotExist:
+            token["user_alumni_id"] = None
+
         return token
 
     def validate(self, attrs):

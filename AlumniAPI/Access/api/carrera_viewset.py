@@ -9,7 +9,7 @@ from Access.permissions import Allowed, PermissionPolicyMixin, isAdmin
 class CarreraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carrera
-        fields = ['id', 'codigo', 'nombre', 'activo']
+        fields = ['id', 'codigo', 'nombre', 'descripcion', 'activo']
 
 
 class CarreraViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):

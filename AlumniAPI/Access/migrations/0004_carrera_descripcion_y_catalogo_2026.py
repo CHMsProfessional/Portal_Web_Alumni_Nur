@@ -1,10 +1,7 @@
-from django.contrib.auth.models import User
-from django.db.models.signals import post_migrate, post_save
-from django.dispatch import receiver
-from Access.models import Carrera, UserAlumni
+from django.db import migrations, models
 
 
-CARRERAS_BASE = [
+CATALOGO_CARRERAS = [
     {
         "codigo": "CTP",
         "nombre": "Licenciatura en Contaduría Pública",
@@ -92,42 +89,59 @@ CARRERAS_BASE = [
     },
 ]
 
+MAPEO_LEGACY = {
+    "INGSIS": "ISI",
+    "INGCOM": "ICO",
+    "CP": "CTP",
+    "ADM": "ADE",
+}
 
-@receiver(post_migrate)
-def seed_carreras(sender, **kwargs):
-    if sender.name != 'Access':
-        return
 
-    active_codes = {carrera["codigo"] for carrera in CARRERAS_BASE}
+def sync_catalogo(apps, schema_editor):
+    Carrera = apps.get_model("Access", "Carrera")
+    catalogo_por_codigo = {item["codigo"]: item for item in CATALOGO_CARRERAS}
 
-    for carrera in CARRERAS_BASE:
+    for codigo_anterior, codigo_nuevo in MAPEO_LEGACY.items():
+        legacy = Carrera.objects.filter(codigo=codigo_anterior).first()
+        if legacy and not Carrera.objects.filter(codigo=codigo_nuevo).exists():
+            target = catalogo_por_codigo[codigo_nuevo]
+            legacy.codigo = target["codigo"]
+            legacy.nombre = target["nombre"]
+            legacy.descripcion = target["descripcion"]
+            legacy.activo = True
+            legacy.save(update_fields=["codigo", "nombre", "descripcion", "activo"])
+
+    codigos_activos = set()
+    for carrera in CATALOGO_CARRERAS:
+        codigos_activos.add(carrera["codigo"])
         Carrera.objects.update_or_create(
             codigo=carrera["codigo"],
             defaults={
                 "nombre": carrera["nombre"],
                 "descripcion": carrera["descripcion"],
-                "activo": True
-            }
+                "activo": True,
+            },
         )
 
-    Carrera.objects.exclude(codigo__in=active_codes).update(activo=False)
+    Carrera.objects.exclude(codigo__in=codigos_activos).update(activo=False)
 
 
-@receiver(post_save, sender=User)
-def ensure_superuser_profile(sender, instance, created, **kwargs):
-    if not created or not instance.is_superuser:
-        return
+class Migration(migrations.Migration):
 
-    if UserAlumni.objects.filter(user=instance).exists():
-        return
+    dependencies = [
+        ("Access", "0003_carrera_activo_carrera_codigo_alter_carrera_nombre"),
+    ]
 
-    carrera_default, _ = Carrera.objects.get_or_create(
-        codigo="SIN",
-        defaults={
-            "nombre": "Sin Especificar",
-            "descripcion": "Carrera no especificada o asignación temporal por defecto.",
-            "activo": True,
-        },
-    )
-
-    UserAlumni.objects.create(user=instance, carrera=carrera_default)
+    operations = [
+        migrations.AddField(
+            model_name="carrera",
+            name="descripcion",
+            field=models.TextField(blank=True, default=""),
+        ),
+        migrations.AlterField(
+            model_name="carrera",
+            name="codigo",
+            field=models.CharField(max_length=20, unique=True),
+        ),
+        migrations.RunPython(sync_catalogo, migrations.RunPython.noop),
+    ]

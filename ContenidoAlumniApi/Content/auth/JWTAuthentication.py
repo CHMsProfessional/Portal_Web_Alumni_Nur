@@ -41,6 +41,7 @@ class JWTAuthentication(BaseAuthentication):
         user = SimpleNamespace(
             is_authenticated=True,
             id=user_id,
+            alumni_id=_safe_int(payload.get("user_alumni_id")),
             username=payload.get("username", ""),
             is_admin=bool(payload.get("is_admin", False)),
         )

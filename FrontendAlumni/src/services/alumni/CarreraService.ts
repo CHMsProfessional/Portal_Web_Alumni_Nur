@@ -1,7 +1,7 @@
 import api from "../Interceptors/interceptorsApiAccess";
 import type { Carrera } from "../../models/Carrera/Carrera";
 
-const CARRERAS_CACHE_KEY = "carreras_catalog_cache";
+const CARRERAS_CACHE_KEY = "carreras_catalog_cache_v2";
 const CARRERA_CACHE_TTL_MS = 30 * 60 * 1000;
 
 type CarreraCachePayload = {

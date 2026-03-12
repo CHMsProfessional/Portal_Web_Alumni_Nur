@@ -114,7 +114,7 @@ class ComunidadSerializer(serializers.ModelSerializer):
         if not user or not getattr(user, "is_authenticated", False):
             return None
 
-        user_id = getattr(user, "id", None)
+        user_id = getattr(user, "alumni_id", None)
         try:
             return int(user_id)
         except (TypeError, ValueError):
