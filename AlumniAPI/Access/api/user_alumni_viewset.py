@@ -42,7 +42,9 @@ class UserAlumniSerializer(serializers.ModelSerializer):
     carrera_codigo = serializers.CharField(source="carrera.codigo", read_only=True)
     carrera_nombre = serializers.CharField(source="carrera.nombre", read_only=True)
 
-    is_admin = serializers.BooleanField(required=False, default=False)
+    # IMPORTANT: don't default to False on update/PUT; otherwise admins get demoted
+    # when the field isn't explicitly provided.
+    is_admin = serializers.BooleanField(required=False)
 
     class Meta:
         model = UserAlumni
@@ -114,18 +116,41 @@ class UserAlumniSerializer(serializers.ModelSerializer):
                 "username": ["Este nombre de usuario ya está en uso."]
             })
 
-        user_alumni = UserAlumni.objects.create(
+        # NOTE: When a superuser is created, `Access.signals.ensure_superuser_profile` may
+        # auto-create a `UserAlumni` profile. Avoid double-creating the OneToOne.
+        user_alumni, created = UserAlumni.objects.get_or_create(
             user=user,
-            carrera=carrera,
-            **validated_data,
+            defaults={
+                "carrera": carrera,
+                **validated_data,
+            },
         )
+
+        if not created:
+            changed_fields = []
+
+            if carrera is not None and user_alumni.carrera_id != getattr(carrera, "id", None):
+                user_alumni.carrera = carrera
+                changed_fields.append("carrera")
+
+            # In case additional fields are added later to the model/serializer.
+            for field_name, value in validated_data.items():
+                if hasattr(user_alumni, field_name) and getattr(user_alumni, field_name) != value:
+                    setattr(user_alumni, field_name, value)
+                    changed_fields.append(field_name)
+
+            if changed_fields:
+                user_alumni.save(update_fields=list(set(changed_fields)))
 
         notify_cache_clear(user_alumni.id)
         return user_alumni
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        is_admin = validated_data.pop("is_admin", None)
+        # Only apply admin changes if the client explicitly sent `is_admin`.
+        initial_data = getattr(self, "initial_data", {}) or {}
+        is_admin_provided = "is_admin" in initial_data
+        is_admin = validated_data.pop("is_admin", None) if is_admin_provided else None
         carrera = validated_data.pop("carrera", None)
 
         if carrera is not None:
