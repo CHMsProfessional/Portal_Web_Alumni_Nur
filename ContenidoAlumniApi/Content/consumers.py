@@ -30,6 +30,12 @@ class BaseChatConsumer(AsyncWebsocketConsumer):
     CLOSE_CODE_NOT_FOUND = 4004
     CLOSE_CODE_EXPIRED = 4008
 
+    def resolve_alumni_user_id(self):
+        return _safe_int(
+            getattr(self.user, "alumni_id", None)
+            or getattr(self.user, "id", None)
+        )
+
     def _resolve_auth_close_code(self):
         auth_status = self.scope.get("auth_status")
 
@@ -135,7 +141,7 @@ class ComunidadChatConsumer(BaseChatConsumer):
             await self.close(code=self.CLOSE_CODE_UNAUTHENTICATED)
             return
 
-        user_id = _safe_int(getattr(self.user, "id", None))
+        user_id = self.resolve_alumni_user_id()
         if user_id is None:
             logger.warning("WebSocket legacy rechazado: user_id inválido")
             await self.close(code=self.CLOSE_CODE_UNAUTHENTICATED)
@@ -163,7 +169,7 @@ class ComunidadChatConsumer(BaseChatConsumer):
 
         logger.info(
             "Desconectado legacy user_id=%s de grupo=%s code=%s",
-            getattr(self.user, "id", None),
+            getattr(self.user, "alumni_id", None) or getattr(self.user, "id", None),
             getattr(self, "group_name", None),
             close_code,
         )
@@ -189,7 +195,7 @@ class ComunidadChatConsumer(BaseChatConsumer):
         if event_type == "escribiendo":
             await self.send_typing_event(
                 self.group_name,
-                _safe_int(getattr(self.user, "id", None)),
+                self.resolve_alumni_user_id(),
             )
             return
 
@@ -198,7 +204,7 @@ class ComunidadChatConsumer(BaseChatConsumer):
             await self.send_error("El mensaje no puede estar vacío", code="EMPTY_MESSAGE")
             return
 
-        user_id = _safe_int(getattr(self.user, "id", None))
+        user_id = self.resolve_alumni_user_id()
         if user_id is None:
             await self.send_error("Usuario inválido", code="INVALID_USER")
             return
@@ -273,7 +279,7 @@ class ConversacionChatConsumer(BaseChatConsumer):
             await self.close(code=self.CLOSE_CODE_UNAUTHENTICATED)
             return
 
-        user_id = _safe_int(getattr(self.user, "id", None))
+        user_id = self.resolve_alumni_user_id()
         if user_id is None:
             logger.warning("WebSocket conversación rechazado: user_id inválido")
             await self.close(code=self.CLOSE_CODE_UNAUTHENTICATED)
@@ -323,7 +329,7 @@ class ConversacionChatConsumer(BaseChatConsumer):
 
         logger.info(
             "Desconectado conversación user_id=%s de grupo=%s code=%s",
-            getattr(self.user, "id", None),
+            getattr(self.user, "alumni_id", None) or getattr(self.user, "id", None),
             getattr(self, "group_name", None),
             close_code,
         )
@@ -341,7 +347,7 @@ class ConversacionChatConsumer(BaseChatConsumer):
             return
 
         event_type = data.get("type")
-        user_id = _safe_int(getattr(self.user, "id", None))
+        user_id = self.resolve_alumni_user_id()
 
         if event_type == "ping":
             await self.send(text_data=json.dumps({"type": "pong"}))

@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectName": {
+      "value": "alumni"
+    },
+    "environment": {
+      "value": "dev"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "postgresqlAdminUsername": {
+      "value": "adminuser"
+    },
+    "postgresqlAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.KeyVault/vaults/{keyvault-name}"
+        },
+        "secretName": "postgresqlAdminPassword"
+      }
+    },
+    "postgresqlVersion": {
+      "value": "15"
+    },
+    "postgresqlSku": {
+      "value": "Standard_B1ms"
+    },
+    "postgresqlStorageGB": {
+      "value": 32
+    },
+    "redisCapacity": {
+      "value": 0
+    },
+    "redisSku": {
+      "value": "Basic"
+    },
+    "redisFamily": {
+      "value": "C"
+    },
+    "redisRequireSecureTransport": {
+      "value": true
+    },
+    "appServiceSkuName": {
+      "value": "B1"
+    },
+    "appServiceInstanceCount": {
+      "value": 1
+    },
+    "alumniApiImageTag": {
+      "value": "latest"
+    },
+    "contentApiImageTag": {
+      "value": "latest"
+    },
+    "staticWebAppSku": {
+      "value": "Free"
+    },
+    "repositoryUrl": {
+      "value": ""
+    },
+    "repositoryBranch": {
+      "value": "main"
+    },
+    "ownerName": {
+      "value": "Engineering"
+    },
+    "ownerEmail": {
+      "value": "contact@example.com"
+    },
+    "costCenter": {
+      "value": "CC-001"
+    },
+    "enableMonitoring": {
+      "value": true
+    },
+    "enableApplicationInsights": {
+      "value": false
+    },
+    "logRetentionDays": {
+      "value": 30
+    },
+    "enableDatabaseBackup": {
+      "value": true
+    },
+    "databaseBackupRetentionDays": {
+      "value": 7
+    },
+    "postgresqlAllowPublicAccess": {
+      "value": false
+    }
+  }
+}

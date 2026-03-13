@@ -7,6 +7,7 @@ from .access_service import (
     get_carrera_by_id,
     get_carreras_batch,
     validate_user_ids,
+    prune_invalid_user_ids,
     validate_carrera_ids,
     cache_key_user,
     cache_key_carrera,

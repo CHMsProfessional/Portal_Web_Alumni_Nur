@@ -229,6 +229,30 @@ def validate_user_ids(user_ids, request=None) -> list[int]:
     return [uid for uid in ids if uid not in encontrados_ids]
 
 
+def prune_invalid_user_ids(user_ids, request=None) -> tuple[list[int], list[int]] | None:
+    """
+    Retorna una tupla (ids_validos, ids_huerfanos).
+    Si Access no responde, retorna None para que el caller decida el fallback.
+    """
+    ids = _normalize_ids(user_ids)
+    if not ids:
+        return [], []
+
+    encontrados = get_users_batch(ids, request=request)
+    if encontrados is None:
+        return None
+
+    encontrados_ids = {
+        _normalize_int(item.get("id"))
+        for item in encontrados
+        if isinstance(item, dict)
+    }
+
+    validos = [uid for uid in ids if uid in encontrados_ids]
+    huerfanos = [uid for uid in ids if uid not in encontrados_ids]
+    return validos, huerfanos
+
+
 def validate_carrera_ids(carrera_ids, request=None) -> list[int]:
     ids = _normalize_ids(carrera_ids)
     if not ids:

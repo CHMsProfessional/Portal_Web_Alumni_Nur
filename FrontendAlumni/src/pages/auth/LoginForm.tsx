@@ -15,6 +15,7 @@ import {
 import "./LoginForm.css";
 import { Routes } from "../../routes/CONSTANTS";
 import { AuthService } from "../../services/alumni/AuthService";
+import { notifyLoginError } from "../../services/ui/AlertService";
 
 const getLoginErrorMessage = (error: unknown): string => {
     const err = error as {
@@ -31,27 +32,11 @@ const getLoginErrorMessage = (error: unknown): string => {
         message?: string;
     };
 
-    const data = err?.response?.data;
-
-    if (Array.isArray(data?.non_field_errors) && data.non_field_errors.length > 0) {
-        return data.non_field_errors[0];
+    if (!err?.response) {
+        return "No se pudo conectar con el servidor. Intentalo nuevamente.";
     }
 
-    if (Array.isArray(data?.username) && data.username.length > 0) {
-        return data.username[0];
-    }
-
-    if (Array.isArray(data?.password) && data.password.length > 0) {
-        return data.password[0];
-    }
-
-    return (
-        data?.detail ||
-        data?.message ||
-        data?.error ||
-        err?.message ||
-        "No se pudo iniciar sesión. Verifica tus credenciales."
-    );
+    return "No se pudo iniciar sesion. Verifica tus credenciales e intentalo nuevamente.";
 };
 
 const LoginForm = () => {
@@ -98,7 +83,9 @@ const LoginForm = () => {
             navigate(Routes.HOME, { replace: true });
         } catch (err: unknown) {
             console.error("Error al iniciar sesión:", err);
-            setError(getLoginErrorMessage(err));
+            const message = getLoginErrorMessage(err);
+            setError(message);
+            notifyLoginError();
         } finally {
             setIsSubmitting(false);
         }

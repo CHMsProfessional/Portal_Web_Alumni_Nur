@@ -10,6 +10,7 @@ from Content.permissions.is_admin import isAdmin
 from Content.permissions.permission_mixin import PermissionPolicyMixin
 from Content.services import (
     validate_user_ids,
+    prune_invalid_user_ids,
     get_users_batch,
     clear_user_profile_cache,
 )
@@ -35,6 +36,11 @@ class CursoSerializer(serializers.ModelSerializer):
 
         if len(inscritos) != len(set(inscritos)):
             raise serializers.ValidationError("La lista de usuarios contiene duplicados.")
+
+        pruned = prune_invalid_user_ids(inscritos, request=self.context.get("request"))
+        if pruned is not None:
+            inscritos_validos, _inscritos_huerfanos = pruned
+            return inscritos_validos
 
         faltantes = validate_user_ids(inscritos, request=self.context.get("request"))
         if faltantes:

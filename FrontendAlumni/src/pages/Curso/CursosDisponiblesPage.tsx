@@ -91,7 +91,7 @@ const resolveDetalleRoute = (cursoId: number): string => {
         | ((id: number) => string)
         | undefined;
 
-    return fn ? fn(cursoId) : `/cursos/${cursoId}`;
+    return fn ? fn(cursoId) : `/cursos/detalle/${cursoId}`;
 };
 
 const getErrorMessage = (error: unknown): string => {

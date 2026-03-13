@@ -24,6 +24,7 @@ import { Documento } from "../../models/Documento/Documento";
 import { DocumentoRequest } from "../../models/Documento/DocumentoRequest";
 import { Carrera } from "../../models/Carrera/Carrera";
 import { Routes } from "../../routes/CONSTANTS";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 type CarreraOption = {
     value: number | null;
@@ -129,7 +130,8 @@ const DocumentosFormPage = () => {
                 setCarreras(data ?? []);
             } catch (loadError) {
                 console.error("No se pudieron cargar las carreras.", loadError);
-                setError("No se pudieron cargar las carreras.");
+                const detail = notifyAdminError("Error al cargar carreras del formulario de documentos.", loadError);
+                setError(detail);
             }
         };
 
@@ -165,7 +167,8 @@ const DocumentosFormPage = () => {
                 setPreviewImg(documento.imagen_portada ?? null);
             } catch (loadError) {
                 console.error("No se pudo cargar el documento.", loadError);
-                setError("No se pudo cargar el documento para edición.");
+                const detail = notifyAdminError("Error al cargar el documento para edicion.", loadError);
+                setError(detail);
             } finally {
                 setInitialLoading(false);
             }
@@ -314,10 +317,12 @@ const DocumentosFormPage = () => {
                 await DocumentoService.create(payload);
             }
 
+            notifySuccess(editMode ? "Documento actualizado correctamente." : "Documento creado correctamente.");
             navigate(Routes.ADMIN.DOCUMENTOS.LIST);
         } catch (submitError) {
             console.error("Error al guardar el documento.", submitError);
-            setError(getErrorMessage(submitError));
+            const detail = notifyAdminError("No se pudo guardar el documento.", submitError);
+            setError(detail || getErrorMessage(submitError));
         } finally {
             setLoading(false);
         }

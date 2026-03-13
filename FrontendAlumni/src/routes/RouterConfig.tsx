@@ -160,6 +160,7 @@ export const routerConfig = createBrowserRouter([
     { path: Routes.CURSOS.ME, element: <ProtectedRouteShell Component={MisCursosPage} /> },
     { path: Routes.CURSOS.LIST, element: <ProtectedRouteShell Component={CursosDisponiblesPage} /> },
     { path: Routes.CURSOS.DETAIL, element: <ProtectedRouteShell Component={CursosDetailPage} /> },
+    { path: Routes.CURSOS.DETAIL_LEGACY, element: <ProtectedRouteShell Component={CursosDetailPage} /> },
 
     // Rutas de eventos
     { path: Routes.EVENTOS, element: <ProtectedRouteShell Component={EventosHomePage} /> },

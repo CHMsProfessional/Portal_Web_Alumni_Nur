@@ -1,0 +1,465 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "18141372652040699948"
+    }
+  },
+  "parameters": {
+    "projectName": {
+      "type": "string",
+      "metadata": {
+        "description": "Project name prefix used in resource names."
+      }
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "dev",
+      "allowedValues": [
+        "dev",
+        "qa",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Environment name, for example dev, qa, prod."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region for all resources."
+      }
+    },
+    "postgresqlLocation": {
+      "type": "string",
+      "defaultValue": "centralus",
+      "metadata": {
+        "description": "Azure region for PostgreSQL Flexible Server. Use a region enabled for your subscription offer."
+      }
+    },
+    "staticWebAppLocation": {
+      "type": "string",
+      "defaultValue": "eastus2",
+      "metadata": {
+        "description": "Azure region for Static Web App. Use a supported region such as eastus2 or westeurope."
+      }
+    },
+    "postgresqlAdminUsername": {
+      "type": "string",
+      "defaultValue": "pgadmin",
+      "metadata": {
+        "description": "PostgreSQL administrator username."
+      }
+    },
+    "postgresqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "PostgreSQL administrator password."
+      }
+    },
+    "alumniApiImageTag": {
+      "type": "string",
+      "defaultValue": "latest",
+      "metadata": {
+        "description": "Container image tag for Alumni API."
+      }
+    },
+    "contentApiImageTag": {
+      "type": "string",
+      "defaultValue": "latest",
+      "metadata": {
+        "description": "Container image tag for Content API."
+      }
+    },
+    "alumniApiPort": {
+      "type": "int",
+      "defaultValue": 8000,
+      "metadata": {
+        "description": "Port exposed by Alumni API container."
+      }
+    },
+    "contentApiPort": {
+      "type": "int",
+      "defaultValue": 8001,
+      "metadata": {
+        "description": "Port exposed by Content API container."
+      }
+    },
+    "appServicePlanSku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "metadata": {
+        "description": "App Service SKU (demo: B1)."
+      }
+    },
+    "postgresqlSkuName": {
+      "type": "string",
+      "defaultValue": "Standard_B1ms",
+      "metadata": {
+        "description": "PostgreSQL sku name."
+      }
+    },
+    "postgresqlStorageGb": {
+      "type": "int",
+      "defaultValue": 32,
+      "minValue": 32,
+      "metadata": {
+        "description": "PostgreSQL storage in GB."
+      }
+    },
+    "redisFamily": {
+      "type": "string",
+      "defaultValue": "C",
+      "allowedValues": [
+        "C",
+        "P"
+      ],
+      "metadata": {
+        "description": "Redis SKU family (Basic/Standard: C, Premium: P)."
+      }
+    },
+    "redisSkuName": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "Redis SKU tier."
+      }
+    },
+    "redisCapacity": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 6,
+      "metadata": {
+        "description": "Redis capacity (Basic C0: 0, Basic C1: 1)."
+      }
+    }
+  },
+  "variables": {
+    "suffix": "[toLower(uniqueString(subscription().id, resourceGroup().id, parameters('projectName'), parameters('environment')))]",
+    "base": "[toLower(format('{0}-{1}', parameters('projectName'), parameters('environment')))]",
+    "postgresSuffix": "[toLower(uniqueString(subscription().id, resourceGroup().id, parameters('projectName'), parameters('environment'), parameters('postgresqlLocation')))]",
+    "acrName": "[take(replace(format('{0}{1}{2}', parameters('projectName'), parameters('environment'), variables('suffix')), '-', ''), 50)]",
+    "planName": "[take(format('asp-{0}-{1}', variables('base'), variables('suffix')), 40)]",
+    "alumniApiName": "[take(format('app-{0}-alumni-{1}', variables('base'), variables('suffix')), 60)]",
+    "contentApiName": "[take(format('app-{0}-content-{1}', variables('base'), variables('suffix')), 60)]",
+    "postgresServerName": "[take(format('psql-{0}-{1}', variables('base'), variables('postgresSuffix')), 63)]",
+    "postgresDbName": "alumni",
+    "redisName": "[take(format('redis-{0}-{1}', variables('base'), variables('suffix')), 63)]",
+    "staticWebAppName": "[take(format('swa-{0}-{1}', variables('base'), variables('suffix')), 40)]",
+    "tags": {
+      "project": "[parameters('projectName')]",
+      "environment": "[parameters('environment')]",
+      "managedBy": "bicep"
+    },
+    "postgresHost": "[format('{0}.postgres.database.azure.com', variables('postgresServerName'))]",
+    "postgresConn": "[format('postgresql://{0}:{1}@{2}:5432/{3}?sslmode=require', parameters('postgresqlAdminUsername'), parameters('postgresqlAdminPassword'), variables('postgresHost'), variables('postgresDbName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('acrName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "adminUserEnabled": true,
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2023-12-01",
+      "name": "[variables('planName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "kind": "linux",
+      "sku": {
+        "name": "[parameters('appServicePlanSku')]",
+        "tier": "[if(startsWith(parameters('appServicePlanSku'), 'B'), 'Basic', 'Standard')]",
+        "capacity": 1
+      },
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "apiVersion": "2024-08-01",
+      "name": "[variables('postgresServerName')]",
+      "location": "[parameters('postgresqlLocation')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "[parameters('postgresqlSkuName')]",
+        "tier": "Burstable"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('postgresqlAdminUsername')]",
+        "administratorLoginPassword": "[parameters('postgresqlAdminPassword')]",
+        "version": "16",
+        "storage": {
+          "storageSizeGB": "[parameters('postgresqlStorageGb')]"
+        },
+        "network": {
+          "publicNetworkAccess": "Enabled"
+        },
+        "backup": {
+          "backupRetentionDays": 7,
+          "geoRedundantBackup": "Disabled"
+        },
+        "highAvailability": {
+          "mode": "Disabled"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/databases",
+      "apiVersion": "2024-08-01",
+      "name": "[format('{0}/{1}', variables('postgresServerName'), variables('postgresDbName'))]",
+      "properties": {
+        "charset": "UTF8",
+        "collation": "en_US.utf8"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+      "apiVersion": "2024-08-01",
+      "name": "[format('{0}/AllowAzureServices', variables('postgresServerName'))]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Cache/redis",
+      "apiVersion": "2023-08-01",
+      "name": "[variables('redisName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "sku": {
+          "family": "[parameters('redisFamily')]",
+          "name": "[parameters('redisSkuName')]",
+          "capacity": "[parameters('redisCapacity')]"
+        },
+        "enableNonSslPort": true,
+        "minimumTlsVersion": "1.2",
+        "redisConfiguration": {}
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-12-01",
+      "name": "[variables('alumniApiName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "kind": "app,linux,container",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "linuxFxVersion": "[format('DOCKER|{0}/alma-api:{1}', reference(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').loginServer, parameters('alumniApiImageTag'))]",
+          "acrUseManagedIdentityCreds": false,
+          "alwaysOn": true,
+          "ftpsState": "Disabled",
+          "minTlsVersion": "1.2"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('acrName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/appsettings', variables('alumniApiName'))]",
+      "properties": {
+        "WEBSITES_PORT": "[string(parameters('alumniApiPort'))]",
+        "WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
+        "DOCKER_REGISTRY_SERVER_URL": "[format('https://{0}', reference(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').loginServer)]",
+        "DOCKER_REGISTRY_SERVER_USERNAME": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').username]",
+        "DOCKER_REGISTRY_SERVER_PASSWORD": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').passwords[0].value]",
+        "DJANGO_SETTINGS_MODULE": "AlumniAPI.settings",
+        "DJANGO_DEBUG": "False",
+        "DJANGO_ALLOWED_HOSTS": "[format('{0},localhost,127.0.0.1', reference(resourceId('Microsoft.Web/sites', variables('alumniApiName')), '2023-12-01').defaultHostName)]",
+        "DB_NAME": "[variables('postgresDbName')]",
+        "DB_USER": "[parameters('postgresqlAdminUsername')]",
+        "DB_PASSWORD": "[parameters('postgresqlAdminPassword')]",
+        "DB_HOST": "[variables('postgresHost')]",
+        "DB_PORT": "5432",
+        "PGSSLMODE": "require",
+        "DATABASE_URL": "[variables('postgresConn')]",
+        "REDIS_URL": "[format('rediss://:{0}@{1}:6380/0', listKeys(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').primaryKey, reference(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').hostName)]",
+        "CORS_ALLOWED_ORIGINS": "[format('https://{0}.azurestaticapps.net', variables('staticWebAppName'))]",
+        "DJANGO_ALLOWED_ORIGINS": "[format('https://{0}.azurestaticapps.net', variables('staticWebAppName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('acrName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('alumniApiName'))]",
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]",
+        "[resourceId('Microsoft.Cache/redis', variables('redisName'))]",
+        "[resourceId('Microsoft.Web/staticSites', variables('staticWebAppName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-12-01",
+      "name": "[variables('contentApiName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "kind": "app,linux,container",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "linuxFxVersion": "[format('DOCKER|{0}/content-api:{1}', reference(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').loginServer, parameters('contentApiImageTag'))]",
+          "acrUseManagedIdentityCreds": false,
+          "alwaysOn": true,
+          "ftpsState": "Disabled",
+          "minTlsVersion": "1.2"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('acrName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2023-12-01",
+      "name": "[format('{0}/appsettings', variables('contentApiName'))]",
+      "properties": {
+        "WEBSITES_PORT": "[string(parameters('contentApiPort'))]",
+        "WEBSITES_ENABLE_APP_SERVICE_STORAGE": "false",
+        "DOCKER_REGISTRY_SERVER_URL": "[format('https://{0}', reference(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').loginServer)]",
+        "DOCKER_REGISTRY_SERVER_USERNAME": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').username]",
+        "DOCKER_REGISTRY_SERVER_PASSWORD": "[listCredentials(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').passwords[0].value]",
+        "DJANGO_SETTINGS_MODULE": "ContenidoAlumniApi.settings",
+        "DJANGO_DEBUG": "False",
+        "DJANGO_ALLOWED_HOSTS": "[format('{0},localhost,127.0.0.1', reference(resourceId('Microsoft.Web/sites', variables('contentApiName')), '2023-12-01').defaultHostName)]",
+        "DB_NAME": "[variables('postgresDbName')]",
+        "DB_USER": "[parameters('postgresqlAdminUsername')]",
+        "DB_PASSWORD": "[parameters('postgresqlAdminPassword')]",
+        "DB_HOST": "[variables('postgresHost')]",
+        "DB_PORT": "5432",
+        "PGSSLMODE": "require",
+        "REDIS_HOST": "[reference(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').hostName]",
+        "REDIS_PORT": "6379",
+        "DATABASE_URL": "[variables('postgresConn')]",
+        "REDIS_URL": "[format('rediss://:{0}@{1}:6380/0', listKeys(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').primaryKey, reference(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').hostName)]",
+        "CORS_ALLOWED_ORIGINS": "[format('https://{0}.azurestaticapps.net', variables('staticWebAppName'))]",
+        "DJANGO_ALLOWED_ORIGINS": "[format('https://{0}.azurestaticapps.net', variables('staticWebAppName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', variables('acrName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('contentApiName'))]",
+        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', variables('postgresServerName'))]",
+        "[resourceId('Microsoft.Cache/redis', variables('redisName'))]",
+        "[resourceId('Microsoft.Web/staticSites', variables('staticWebAppName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2023-12-01",
+      "name": "[variables('staticWebAppName')]",
+      "location": "[parameters('staticWebAppLocation')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "Free",
+        "tier": "Free"
+      },
+      "properties": {
+        "repositoryUrl": "",
+        "branch": "",
+        "buildProperties": {
+          "appLocation": "/",
+          "outputLocation": "dist"
+        },
+        "stagingEnvironmentPolicy": "Enabled"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]"
+    },
+    "containerRegistryName": {
+      "type": "string",
+      "value": "[variables('acrName')]"
+    },
+    "containerRegistryLoginServer": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', variables('acrName')), '2023-07-01').loginServer]"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "value": "[variables('planName')]"
+    },
+    "alumniApiAppName": {
+      "type": "string",
+      "value": "[variables('alumniApiName')]"
+    },
+    "alumniApiUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', variables('alumniApiName')), '2023-12-01').defaultHostName)]"
+    },
+    "contentApiAppName": {
+      "type": "string",
+      "value": "[variables('contentApiName')]"
+    },
+    "contentApiUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', variables('contentApiName')), '2023-12-01').defaultHostName)]"
+    },
+    "staticWebAppNameOut": {
+      "type": "string",
+      "value": "[variables('staticWebAppName')]"
+    },
+    "staticWebAppUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/staticSites', variables('staticWebAppName')), '2023-12-01').defaultHostname)]"
+    },
+    "postgresqlServerName": {
+      "type": "string",
+      "value": "[variables('postgresServerName')]"
+    },
+    "postgresqlDatabaseName": {
+      "type": "string",
+      "value": "[format('{0}/{1}', variables('postgresServerName'), variables('postgresDbName'))]"
+    },
+    "redisNameOut": {
+      "type": "string",
+      "value": "[variables('redisName')]"
+    },
+    "redisHost": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Cache/redis', variables('redisName')), '2023-08-01').hostName]"
+    }
+  }
+}

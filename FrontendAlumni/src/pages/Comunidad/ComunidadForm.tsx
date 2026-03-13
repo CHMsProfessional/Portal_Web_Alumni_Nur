@@ -27,6 +27,7 @@ import { CarreraService } from "../../services/alumni/CarreraService";
 import UserAlumniService from "../../services/alumni/UserAlumniService";
 
 import { Routes } from "../../routes/CONSTANTS";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 type SelectOption = {
     value: number;
@@ -104,7 +105,8 @@ const ComunidadForm = () => {
                 setUsuarios(usuariosData ?? []);
             } catch (err) {
                 console.error("No se pudieron cargar carreras o usuarios.", err);
-                setError("No se pudieron cargar los datos base del formulario.");
+                const detail = notifyAdminError("Error al cargar datos base de comunidades.", err);
+                setError(detail);
             }
         };
 
@@ -133,7 +135,8 @@ const ComunidadForm = () => {
                 setImagenPreview(data.imagen_portada ?? null);
             } catch (err) {
                 console.error("No se pudo cargar la comunidad.", err);
-                setError("No se pudo cargar la comunidad.");
+                const detail = notifyAdminError("Error al cargar la comunidad para edicion.", err);
+                setError(detail);
             } finally {
                 setInitialLoading(false);
             }
@@ -337,10 +340,12 @@ const ComunidadForm = () => {
                 await ComunidadService.create(payload);
             }
 
+            notifySuccess(isEditing ? "Comunidad actualizada correctamente." : "Comunidad creada correctamente.");
             navigate(Routes.ADMIN.COMUNIDADES.LIST);
         } catch (err) {
             console.error("No se pudo guardar la comunidad.", err);
-            setError(getErrorMessage(err));
+            const detail = notifyAdminError("No se pudo guardar la comunidad.", err);
+            setError(detail || getErrorMessage(err));
         } finally {
             setLoading(false);
         }

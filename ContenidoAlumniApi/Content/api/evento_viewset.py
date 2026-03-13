@@ -15,6 +15,7 @@ from Content.permissions.is_admin import isAdmin
 from Content.permissions.permission_mixin import PermissionPolicyMixin
 from Content.services import (
     validate_user_ids,
+    prune_invalid_user_ids,
     validate_carrera_ids,
     get_users_batch,
     get_carreras_batch,
@@ -140,6 +141,11 @@ class EventoSerializer(serializers.ModelSerializer):
 
         if len(usuarios) != len(set(usuarios)):
             raise serializers.ValidationError("La lista de usuarios contiene duplicados.")
+
+        pruned = prune_invalid_user_ids(usuarios, request=self.context.get("request"))
+        if pruned is not None:
+            usuarios_validos, _usuarios_huerfanos = pruned
+            return usuarios_validos
 
         faltantes = validate_user_ids(usuarios, request=self.context.get("request"))
         if faltantes:
@@ -328,9 +334,17 @@ class EventoViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         mutable_data = request.data.copy()
 
         if "carreras" in request.data:
-            mutable_data.setlist("carreras", self._sanitizar_campo_lista(request.data, "carreras"))
+            carreras = self._sanitizar_campo_lista(request.data, "carreras")
+            if hasattr(mutable_data, "setlist"):
+                mutable_data.setlist("carreras", carreras)
+            else:
+                mutable_data["carreras"] = carreras
         if "usuarios" in request.data:
-            mutable_data.setlist("usuarios", self._sanitizar_campo_lista(request.data, "usuarios"))
+            usuarios = self._sanitizar_campo_lista(request.data, "usuarios")
+            if hasattr(mutable_data, "setlist"):
+                mutable_data.setlist("usuarios", usuarios)
+            else:
+                mutable_data["usuarios"] = usuarios
 
         serializer = self.get_serializer(data=mutable_data)
         serializer.is_valid(raise_exception=True)
@@ -344,9 +358,17 @@ class EventoViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
         mutable_data = request.data.copy()
 
         if "carreras" in request.data:
-            mutable_data.setlist("carreras", self._sanitizar_campo_lista(request.data, "carreras"))
+            carreras = self._sanitizar_campo_lista(request.data, "carreras")
+            if hasattr(mutable_data, "setlist"):
+                mutable_data.setlist("carreras", carreras)
+            else:
+                mutable_data["carreras"] = carreras
         if "usuarios" in request.data:
-            mutable_data.setlist("usuarios", self._sanitizar_campo_lista(request.data, "usuarios"))
+            usuarios = self._sanitizar_campo_lista(request.data, "usuarios")
+            if hasattr(mutable_data, "setlist"):
+                mutable_data.setlist("usuarios", usuarios)
+            else:
+                mutable_data["usuarios"] = usuarios
 
         partial = kwargs.pop("partial", False)
         serializer = self.get_serializer(instance, data=mutable_data, partial=partial)

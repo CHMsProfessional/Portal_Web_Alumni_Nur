@@ -105,7 +105,7 @@ const resolveCursosDetalleRoute = (cursoId: number): string => {
         routesAny?.CURSOS?.DETALLE_PARAM ||
         routesAny?.CURSO?.DETALLE_PARAM;
 
-    return typeof fn === "function" ? fn(cursoId) : `/cursos/${cursoId}`;
+    return typeof fn === "function" ? fn(cursoId) : `/cursos/detalle/${cursoId}`;
 };
 
 const CursosListPage = () => {

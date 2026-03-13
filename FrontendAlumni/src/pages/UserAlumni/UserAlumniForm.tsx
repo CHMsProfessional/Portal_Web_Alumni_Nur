@@ -25,6 +25,7 @@ import { Carrera } from "../../models/Carrera/Carrera";
 import { UserAlumniAdminCreateRequest } from "../../models/Usuario/UserAlumniAdminCreateRequest";
 import { UserAlumniAdminUpdateRequest } from "../../models/Usuario/UserAlumniAdminUpdateRequest";
 import { UserAlumniSelfUpdateRequest } from "../../models/Usuario/UserAlumniSelfUpdateRequest";
+import { notifyAdminError, notifyError, notifySuccess } from "../../services/ui/AlertService";
 
 type FormMode = "admin-create" | "admin-edit" | "self-edit";
 
@@ -180,6 +181,11 @@ const UserAlumniForm = () => {
                     "No se pudo cargar la información del formulario.";
 
                 setError(backendError);
+                if (isAdminMode) {
+                    notifyAdminError("Error al cargar el formulario de usuarios.", err);
+                } else {
+                    notifyError(backendError);
+                }
             } finally {
                 setLoading(false);
             }
@@ -232,6 +238,7 @@ const UserAlumniForm = () => {
 
                 await UserAlumniService.createAdminUser(payload);
                 setSuccessMessage("Usuario creado correctamente.");
+                notifySuccess("Usuario creado correctamente.");
                 navigate(Routes.ADMIN.USUARIOS.LIST);
                 return;
             }
@@ -253,6 +260,7 @@ const UserAlumniForm = () => {
 
                 await UserAlumniService.updateAdminUser(targetUserId, payload);
                 setSuccessMessage("Usuario actualizado correctamente.");
+                notifySuccess("Usuario actualizado correctamente.");
                 navigate(Routes.ADMIN.USUARIOS.LIST);
                 return;
             }
@@ -266,19 +274,27 @@ const UserAlumniForm = () => {
 
             await UserAlumniService.updateMyProfile(targetUserId, selfPayload);
             setSuccessMessage("Tu perfil fue actualizado correctamente.");
+            notifySuccess("Tu perfil fue actualizado correctamente.");
             navigate(Routes.USER.PROFILE());
         } catch (err: any) {
             console.error("Error guardando usuario:", err);
 
             const responseData = err?.response?.data;
+            let composedError = "";
 
             if (responseData && typeof responseData === "object") {
                 const flattened = flattenBackendErrors(responseData);
-                setError(flattened || "No se pudo guardar la información.");
+                composedError = flattened || "No se pudo guardar la información.";
+                setError(composedError);
             } else {
-                setError(
-                    err?.message || "No se pudo guardar la información del usuario."
-                );
+                composedError = err?.message || "No se pudo guardar la información del usuario.";
+                setError(composedError);
+            }
+
+            if (isAdminMode) {
+                notifyAdminError("No se pudo guardar la informacion del usuario.", err);
+            } else {
+                notifyError(composedError || "No se pudo guardar la informacion del usuario.");
             }
         } finally {
             setSaving(false);

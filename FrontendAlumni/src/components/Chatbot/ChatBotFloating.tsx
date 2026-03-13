@@ -41,9 +41,8 @@ type AgentConfig = {
 };
 
 const DEFAULT_CONFIG: AgentConfig = {
-  agentUrl1:
-    'https://copilotstudio.microsoft.com/environments/5c26fc7c-555b-e719-be52-6a173162c8ed/bots/crdd0_guiaAlumni/webchat?__version__=2',
-  agentUrl2: 'https://ca-api-hkp7f24p5fify.kindsmoke-04c290ea.eastus2.azurecontainerapps.io/',
+  agentUrl1: '',
+  agentUrl2: 'https://ca-api-qns6fah5szisq.mangoisland-6858f4fe.eastus2.azurecontainerapps.io/',
   agent2CropTopPx: 64,
 
   useOverlay: false,
@@ -69,6 +68,72 @@ function addCacheBust(url: string) {
   return `${url}${sep}ts=${Date.now()}`;
 }
 
+function detectPortalTheme(): 'dark' | 'light' {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return 'light';
+
+  const root = document.documentElement;
+  const body = document.body;
+
+  const dataTheme =
+    root.getAttribute('data-theme') ||
+    body?.getAttribute('data-theme') ||
+    root.getAttribute('theme') ||
+    body?.getAttribute('theme');
+
+  if (dataTheme?.toLowerCase() === 'dark') return 'dark';
+  if (dataTheme?.toLowerCase() === 'light') return 'light';
+
+  const classSignalsDark =
+    root.classList.contains('dark') ||
+    root.classList.contains('theme-dark') ||
+    body?.classList.contains('dark') ||
+    body?.classList.contains('theme-dark');
+
+  if (classSignalsDark) return 'dark';
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function withThemeParam(rawUrl: string, theme: 'dark' | 'light'): string {
+  if (!rawUrl) return rawUrl;
+
+  try {
+    const parsed = new URL(rawUrl, window.location.origin);
+    parsed.searchParams.set('theme', theme);
+    return parsed.toString();
+  } catch {
+    const sep = rawUrl.includes('?') ? '&' : '?';
+    return `${rawUrl}${sep}theme=${theme}`;
+  }
+}
+
+// ─── Session persistence (localStorage) ─────────────────────────────────────
+const LS_PREFIX = 'chatbot_session_src::';
+
+function sessionKey(baseUrl: string) {
+  return LS_PREFIX + baseUrl;
+}
+
+/** Returns an existing session src or creates + saves a new one. */
+function getOrCreateSession(baseUrl: string): string {
+  try {
+    const stored = localStorage.getItem(sessionKey(baseUrl));
+    if (stored) return stored;
+  } catch { /* localStorage unavailable */ }
+  const src = addCacheBust(baseUrl);
+  saveSession(baseUrl, src);
+  return src;
+}
+
+function saveSession(baseUrl: string, src: string): void {
+  try { localStorage.setItem(sessionKey(baseUrl), src); } catch { /* ignore */ }
+}
+
+function clearSession(baseUrl: string): void {
+  try { localStorage.removeItem(sessionKey(baseUrl)); } catch { /* ignore */ }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function isMobile() {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(max-width: 640px)').matches;
@@ -82,15 +147,31 @@ const ChatBotFloating = () => {
       : DEFAULT_CONFIG) as AgentConfig;
   }, []);
 
-  const hasAgent2 = Boolean(config.agentUrl2?.trim());
+  const hasAgent1 = Boolean(config.agentUrl1?.trim());
+  const preferredTheme = useMemo(() => detectPortalTheme(), []);
+
+  const themedAgentUrl1 = useMemo(() => {
+    if (!hasAgent1) return '';
+    return withThemeParam(config.agentUrl1!.trim(), preferredTheme);
+  }, [config.agentUrl1, hasAgent1, preferredTheme]);
+
+  const themedAgentUrl2 = useMemo(
+    () => withThemeParam(config.agentUrl2!.trim(), preferredTheme),
+    [config.agentUrl2, preferredTheme]
+  );
 
   const [visible, setVisible] = useState(false);
-  const [mode, setMode] = useState<AgentMode>('agent1');
+  const [mode, setMode] = useState<AgentMode>('agent2');
 
   const currentUrl =
-    mode === 'agent2' && hasAgent2 ? config.agentUrl2!.trim() : config.agentUrl1.trim();
+    mode === 'agent1' && hasAgent1 ? themedAgentUrl1 : themedAgentUrl2;
 
-  const [frameSrc, setFrameSrc] = useState(() => addCacheBust(config.agentUrl1.trim()));
+  // iframeSrc is initialised from localStorage so the session survives page reloads and new tabs.
+  // reloadKey only increments on explicit user-triggered reload.
+  const [iframeSrc, setIframeSrc] = useState<string>(() =>
+    getOrCreateSession(themedAgentUrl2)
+  );
+  const [reloadKey, setReloadKey] = useState(0);
 
   const [pos, setPos] = useState<{ top: number; left: number }>(() => {
     if (typeof window === 'undefined') return { top: 100, left: 100 };
@@ -137,13 +218,33 @@ const ChatBotFloating = () => {
   };
 
   const reloadIframe = () => {
-    setFrameSrc(addCacheBust(currentUrl));
+    clearSession(currentUrl);
+    const newSrc = addCacheBust(currentUrl);
+    saveSession(currentUrl, newSrc);
+    setIframeSrc(newSrc);
+    setReloadKey(k => k + 1);
   };
 
+  // When URL context changes (mode/theme), load (or create) the session for that URL.
   useEffect(() => {
-    if (!visible) return;
-    setFrameSrc(addCacheBust(currentUrl));
-  }, [mode, visible, currentUrl]);
+    setIframeSrc(getOrCreateSession(currentUrl));
+    setReloadKey(0);
+  }, [currentUrl]);
+
+  // Clear ALL chatbot sessions when the app dispatches a 'alumni-logout' event.
+  useEffect(() => {
+    const handleLogout = () => {
+      [themedAgentUrl1, themedAgentUrl2].forEach(url => {
+        if (url?.trim()) clearSession(url.trim());
+      });
+      const freshSrc = addCacheBust(currentUrl);
+      saveSession(currentUrl, freshSrc);
+      setIframeSrc(freshSrc);
+      setReloadKey(k => k + 1);
+    };
+    window.addEventListener('alumni-logout', handleLogout);
+    return () => window.removeEventListener('alumni-logout', handleLogout);
+  }, [themedAgentUrl1, themedAgentUrl2, currentUrl]);
 
   useEffect(() => {
     const onResize = () => {
@@ -383,25 +484,8 @@ const ChatBotFloating = () => {
           </div>
 
           <div className="chat-khipus-ia-headerRow chat-khipus-ia-headerRow--bottom">
-            {hasAgent2 ? (
+            {hasAgent1 ? (
               <div className="chat-khipus-ia-modePicker" role="tablist" aria-label="Seleccionar motor del asistente">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === 'agent1'}
-                  className={['chat-khipus-ia-modeOption', mode === 'agent1' ? 'is-active' : ''].join(' ')}
-                  onClick={() => setMode('agent1')}
-                  title="Usar Copilot Studio"
-                >
-                  <span className="chat-khipus-ia-modeIcon" aria-hidden="true">
-                    <FaMicrosoft />
-                  </span>
-                  <span className="chat-khipus-ia-modeText">
-                    <span className="chat-khipus-ia-modeName">Copilot</span>
-                    <span className="chat-khipus-ia-modeDesc">Asistente institucional embebido</span>
-                  </span>
-                </button>
-
                 <button
                   type="button"
                   role="tab"
@@ -418,10 +502,27 @@ const ChatBotFloating = () => {
                     <span className="chat-khipus-ia-modeDesc">Agente avanzado / integración externa</span>
                   </span>
                 </button>
+
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'agent1'}
+                  className={['chat-khipus-ia-modeOption', mode === 'agent1' ? 'is-active' : ''].join(' ')}
+                  onClick={() => setMode('agent1')}
+                  title="Usar Copilot Studio"
+                >
+                  <span className="chat-khipus-ia-modeIcon" aria-hidden="true">
+                    <FaMicrosoft />
+                  </span>
+                  <span className="chat-khipus-ia-modeText">
+                    <span className="chat-khipus-ia-modeName">Copilot</span>
+                    <span className="chat-khipus-ia-modeDesc">Asistente institucional embebido</span>
+                  </span>
+                </button>
               </div>
             ) : (
               <div className="chat-khipus-ia-modeSingle">
-                <span className="chat-khipus-ia-modeSinglePill">Copilot Studio</span>
+                <span className="chat-khipus-ia-modeSinglePill">Azure AI Foundry</span>
               </div>
             )}
 
@@ -439,8 +540,8 @@ const ChatBotFloating = () => {
 
         <div className="chat-khipus-ia-iframeWrap">
           <iframe
-            key={`${mode}-${frameSrc}`}
-            src={frameSrc}
+            key={`${mode}-${reloadKey}`}
+            src={iframeSrc}
             frameBorder={0}
             title={config.ariaLabels.modal}
             allow="clipboard-write; microphone; camera"

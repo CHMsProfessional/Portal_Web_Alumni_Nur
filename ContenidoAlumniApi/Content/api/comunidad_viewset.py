@@ -14,6 +14,7 @@ from Content.permissions.permission_mixin import PermissionPolicyMixin
 from Content.services import (
     validate_carrera_ids,
     validate_user_ids,
+    prune_invalid_user_ids,
     get_users_batch,
     clear_user_profile_cache,
     clear_comunidad_members_cache,
@@ -260,11 +261,19 @@ class ComunidadViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
                 "carreras": [f"IDs inválidos o no encontrados: {', '.join(map(str, faltantes_carreras))}"]
             })
 
-        faltantes_usuarios = validate_user_ids(usuarios, request=request)
-        if faltantes_usuarios:
-            raise serializers.ValidationError({
-                "usuarios": [f"IDs inválidos o no encontrados: {', '.join(map(str, faltantes_usuarios))}"]
-            })
+        pruned = prune_invalid_user_ids(usuarios, request=request)
+        if pruned is not None:
+            usuarios, _usuarios_huerfanos = pruned
+            if hasattr(mutable_data, "setlist"):
+                mutable_data.setlist("usuarios", [str(usuario_id) for usuario_id in usuarios])
+            else:
+                mutable_data["usuarios"] = usuarios
+        else:
+            faltantes_usuarios = validate_user_ids(usuarios, request=request)
+            if faltantes_usuarios:
+                raise serializers.ValidationError({
+                    "usuarios": [f"IDs inválidos o no encontrados: {', '.join(map(str, faltantes_usuarios))}"]
+                })
 
         return mutable_data
 

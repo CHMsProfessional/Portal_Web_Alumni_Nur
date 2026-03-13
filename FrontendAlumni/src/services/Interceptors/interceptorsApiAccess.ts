@@ -4,6 +4,7 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 import { AuthService } from "../alumni/AuthService";
+import { normalizeMediaUrlsDeep } from "../../utils/normalizeMediaUrls";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
     _retry?: boolean;
@@ -104,7 +105,10 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        response.data = normalizeMediaUrlsDeep(response.data);
+        return response;
+    },
     async (error: AxiosError) => {
         const originalRequest = error.config as RetryableRequestConfig | undefined;
 

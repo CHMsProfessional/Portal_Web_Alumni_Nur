@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
+from urllib.parse import urlparse, urlunparse
 from django.core.management.commands.runserver import Command as runserver
 
 import os
@@ -101,12 +102,50 @@ ASGI_APPLICATION = 'ContenidoAlumniApi.asgi.application'
 
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
+REDIS_URL = os.getenv("REDIS_URL", "").strip()
+
+
+def _is_true(value: str, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "y", "on")
+
+
+def _build_redis_url(host: str, port: int, password: str, db: int, use_ssl: bool) -> str:
+    scheme = "rediss" if use_ssl else "redis"
+    credentials = f":{password}@" if password else ""
+    return f"{scheme}://{credentials}{host}:{port}/{db}"
+
+
+def _override_redis_db(redis_url: str, db: int) -> str:
+    parsed = urlparse(redis_url)
+    if not parsed.scheme:
+        return redis_url
+    return urlunparse(parsed._replace(path=f"/{db}"))
+
+
+if not REDIS_URL:
+    redis_use_ssl_default = REDIS_HOST.endswith(".redis.cache.windows.net")
+    redis_use_ssl = _is_true(os.getenv("REDIS_USE_SSL"), default=redis_use_ssl_default)
+    REDIS_URL = _build_redis_url(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        password=REDIS_PASSWORD,
+        db=0,
+        use_ssl=redis_use_ssl,
+    )
+
+REDIS_CACHE_DB = int(os.getenv("REDIS_CACHE_DB", "1"))
+REDIS_CHANNEL_DB = int(os.getenv("REDIS_CHANNEL_DB", "0"))
+REDIS_CACHE_URL = os.getenv("REDIS_CACHE_URL", "").strip() or _override_redis_db(REDIS_URL, REDIS_CACHE_DB)
+REDIS_CHANNEL_URL = os.getenv("REDIS_CHANNEL_URL", "").strip() or _override_redis_db(REDIS_URL, REDIS_CHANNEL_DB)
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+            "hosts": [REDIS_CHANNEL_URL],
         },
     },
 }
@@ -191,12 +230,10 @@ CORS_ALLOW_METHODS = (
 
 # Cache settings
 
-REDIS_CACHE_DB = int(os.getenv("REDIS_CACHE_DB", "1"))
-
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CACHE_DB}",
+        "LOCATION": REDIS_CACHE_URL,
         "OPTIONS": {
             "socket_connect_timeout": 3,
             "socket_timeout": 3,

@@ -27,6 +27,7 @@ import { EventoService } from "../../services/alumni/EventoService";
 import { CarreraService } from "../../services/alumni/CarreraService";
 import { Carrera } from "../../models/Carrera/Carrera";
 import { Routes } from "../../routes/CONSTANTS";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 type CarreraOption = {
     value: number;
@@ -171,7 +172,8 @@ const EventoForm = () => {
                 setCarreras(Array.isArray(carrerasData) ? carrerasData : []);
             } catch (err) {
                 console.error("No se pudieron cargar las carreras.", err);
-                setApiError("No se pudieron cargar las carreras necesarias para el formulario.");
+                const detail = notifyAdminError("Error al cargar carreras del formulario de eventos.", err);
+                setApiError(detail);
             } finally {
                 setBaseLoading(false);
             }
@@ -212,7 +214,8 @@ const EventoForm = () => {
                 }
             } catch (err) {
                 console.error("No se pudo cargar el evento.", err);
-                setApiError("No se pudo cargar la información del evento.");
+                const detail = notifyAdminError("Error al cargar el evento para edicion.", err);
+                setApiError(detail);
             } finally {
                 setInitialLoading(false);
             }
@@ -370,10 +373,12 @@ const EventoForm = () => {
                 await EventoService.create(payload);
             }
 
+            notifySuccess(form.id ? "Evento actualizado correctamente." : "Evento creado correctamente.");
             navigate(Routes.ADMIN.EVENTOS.LIST);
         } catch (err: any) {
             console.error("Error al guardar el evento.", err);
-            setApiError(formatApiError(err));
+            const detail = notifyAdminError("No se pudo guardar el evento.", err);
+            setApiError(detail || formatApiError(err));
         } finally {
             setLoading(false);
         }

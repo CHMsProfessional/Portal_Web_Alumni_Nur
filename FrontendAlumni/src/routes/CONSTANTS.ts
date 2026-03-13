@@ -55,6 +55,8 @@ export const Routes = {
         LIST: "/cursos/lista",
         DETAIL: "/cursos/detalle/:id",
         DETAIL_PARAM: (id?: number) => `/cursos/detalle/${id}`,
+        DETAIL_LEGACY: "/cursos/:id",
+        DETAIL_LEGACY_PARAM: (id?: number) => `/cursos/${id}`,
     },
 
     ADMIN: {

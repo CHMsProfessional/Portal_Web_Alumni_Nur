@@ -50,7 +50,6 @@ DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in (
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
 
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 # Application definition
 
@@ -176,8 +175,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 VAR_DJANGO_ALLOWED_ORIGINS = os.getenv("DJANGO_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
 VAR_DJANGO_ALLOWED_ORIGINS = [origin.strip() for origin in VAR_DJANGO_ALLOWED_ORIGINS.split(",") if origin.strip()]
-
-print("CORS_ALLOWED_ORIGINS:", VAR_DJANGO_ALLOWED_ORIGINS)
 
 CORS_ALLOWED_ORIGINS = VAR_DJANGO_ALLOWED_ORIGINS 
 

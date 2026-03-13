@@ -19,6 +19,7 @@ import { ServicioAlumni } from "../../models/ServicioAlumni/ServicioAlumni";
 import { ServicioAlumniRequest } from "../../models/ServicioAlumni/ServicioAlumniRequest";
 import { ServicioAlumniService } from "../../services/alumni/ServicioAlumniService";
 import { Routes } from "../../routes/CONSTANTS";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 const opcionesTipo: Array<{
     value: ServicioAlumniRequest["tipo"];
@@ -160,7 +161,8 @@ const ServicioAlumniForm = () => {
                 });
             } catch (err) {
                 console.error("No se pudo cargar el servicio.", err);
-                setError("No se pudo cargar el servicio solicitado.");
+                const detail = notifyAdminError("Error al cargar el servicio para edicion.", err);
+                setError(detail);
             } finally {
                 setInitialLoading(false);
             }
@@ -248,10 +250,12 @@ const ServicioAlumniForm = () => {
                 await ServicioAlumniService.create(payload);
             }
 
+            notifySuccess(isEditing ? "Servicio actualizado correctamente." : "Servicio creado correctamente.");
             navigate(Routes.ADMIN.SERVICIOS.LIST);
         } catch (err) {
             console.error("No se pudo guardar el servicio.", err);
-            setError(prettyBackendError(err));
+            const detail = notifyAdminError("No se pudo guardar el servicio alumni.", err);
+            setError(detail || prettyBackendError(err));
         } finally {
             setLoading(false);
         }

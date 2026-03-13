@@ -80,6 +80,7 @@ const Menu = () => {
     const handleLogout = (): void => {
         AuthService.clearSession();
         UserAlumniService.clearCachedPerfilCompleto();
+        window.dispatchEvent(new Event('alumni-logout'));
         navigate(Routes.AUTH.LOGIN);
     };
 

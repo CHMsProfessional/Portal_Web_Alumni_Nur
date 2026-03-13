@@ -16,10 +16,12 @@ def _safe_int(value):
 @database_sync_to_async
 def build_user_from_payload(payload):
     user_id = _safe_int(payload.get("user_id"))
+    alumni_id = _safe_int(payload.get("user_alumni_id"))
 
     return SimpleNamespace(
         is_authenticated=user_id is not None,
         id=user_id,
+        alumni_id=alumni_id,
         username=payload.get("username", ""),
         is_admin=bool(payload.get("is_admin", False)),
     )
@@ -29,6 +31,7 @@ def _build_anonymous_user():
     return SimpleNamespace(
         is_authenticated=False,
         id=None,
+        alumni_id=None,
         username="",
         is_admin=False,
     )

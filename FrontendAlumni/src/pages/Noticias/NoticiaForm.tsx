@@ -36,6 +36,7 @@ import type { Evento } from "../../models/Evento/Evento";
 import { NoticiaService } from "../../services/alumni/NoticiaService";
 import { ComunidadService } from "../../services/alumni/ComunidadService";
 import { EventoService } from "../../services/alumni/EventoService";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 type FormState = {
     titulo: string;
@@ -234,6 +235,10 @@ const NoticiaForm = () => {
                 setEventos(Array.isArray(eventosResp) ? eventosResp : []);
             } catch (err) {
                 console.warn("No se pudieron cargar los catálogos del formulario.", err);
+                if (mounted) {
+                    const detail = notifyAdminError("Error al cargar catalogos de noticias.", err);
+                    setError(detail);
+                }
             } finally {
                 if (mounted) {
                     setLoadingCatalogs(false);
@@ -290,7 +295,8 @@ const NoticiaForm = () => {
             } catch (err) {
                 console.error("Error cargando noticia:", err);
                 if (mounted) {
-                    setError(getErrorMessage(err));
+                    const detail = notifyAdminError("Error al cargar la noticia para edicion.", err);
+                    setError(detail || getErrorMessage(err));
                 }
             } finally {
                 if (mounted) {
@@ -594,10 +600,12 @@ const NoticiaForm = () => {
                 ? await NoticiaService.update(id, payload)
                 : await NoticiaService.create(payload);
 
+            notifySuccess(isEditing ? "Noticia actualizada correctamente." : "Noticia creada correctamente.");
             redirectAfterSave(saved);
         } catch (err) {
             console.error("Error al guardar la noticia:", err);
-            setError(getErrorMessage(err));
+            const detail = notifyAdminError("No se pudo guardar la noticia.", err);
+            setError(detail || getErrorMessage(err));
         } finally {
             setLoading(false);
         }

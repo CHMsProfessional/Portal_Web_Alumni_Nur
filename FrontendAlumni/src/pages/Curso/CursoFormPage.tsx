@@ -8,6 +8,7 @@ import { CursoRequest } from "../../models/Curso/CursoRequest";
 import { Curso } from "../../models/Curso/Curso";
 import { CursoService } from "../../services/alumni/CursoService";
 import { Routes } from "../../routes/CONSTANTS";
+import { notifyAdminError, notifySuccess } from "../../services/ui/AlertService";
 
 import {
     FaArrowLeft,
@@ -138,7 +139,8 @@ const CursoFormPage = () => {
                 setPreviewImg(data.imagen_portada ?? null);
             } catch (loadError) {
                 console.error("Error al cargar el curso.", loadError);
-                setError("No se pudo cargar el curso para edición.");
+                const detail = notifyAdminError("Error al cargar el curso para edicion.", loadError);
+                setError(detail);
             } finally {
                 setInitialLoading(false);
             }
@@ -237,10 +239,12 @@ const CursoFormPage = () => {
                 await CursoService.create(payload);
             }
 
+            notifySuccess(isEdit ? "Curso actualizado correctamente." : "Curso creado correctamente.");
             navigate(resolveCursosListRoute());
         } catch (submitError) {
             console.error("Error al guardar el curso.", submitError);
-            setError(getErrorMessage(submitError));
+            const detail = notifyAdminError("No se pudo guardar el curso.", submitError);
+            setError(detail || getErrorMessage(submitError));
         } finally {
             setLoading(false);
         }
