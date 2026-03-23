@@ -1,5 +1,6 @@
 import { MensajeConversacion } from "../../models/Comunidad/MensajeConversacion";
 import AuthService from "./AuthService";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 export type ConversationSocketCloseCode = 4001 | 4003 | 4004 | 4008;
 
@@ -63,13 +64,9 @@ export default class ConversationWebSocketService {
 
     private buildUrl(conversacionId: number, token: string): string {
         const configuredBaseUrl = import.meta.env.VITE_WS_CONTENT_URL;
-        const fallbackBaseUrl = import.meta.env.VITE_API_CONTENT_URL
-            ? import.meta.env.VITE_API_CONTENT_URL
-                  .replace(/\/api\/?$/, "")
-                  .replace(/^http/, "ws")
-            : "";
+        const fallbackBaseUrl = import.meta.env.VITE_API_CONTENT_URL ? import.meta.env.VITE_API_CONTENT_URL.replace(/\/api\/?$/, "").replace(/^http/, "ws") : "";
 
-        const baseUrl = (configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, "");
+        const baseUrl = resolveEnvUrl(configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, "");
 
         if (!baseUrl) {
             throw new Error("VITE_WS_CONTENT_URL o VITE_API_CONTENT_URL debe estar configurado.");
