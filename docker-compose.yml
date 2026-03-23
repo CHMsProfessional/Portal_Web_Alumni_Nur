@@ -9,7 +9,7 @@ services:
       ACCESS_DB_NAME: ${ACCESS_DB_NAME:-AlumniDBAccess}
       CONTENT_DB_NAME: ${CONTENT_DB_NAME:-AlumniDB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PUBLIC_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
@@ -58,7 +58,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${ACCESS_PUBLIC_PORT:-8000}:8000"
+      - "${ACCESS_PUBLIC_PORT:-8900}:8000"
 
   content-api:
     build:
@@ -92,7 +92,7 @@ services:
       access-api:
         condition: service_started
     ports:
-      - "${CONTENT_PUBLIC_PORT:-8001}:8001"
+      - "${CONTENT_PUBLIC_PORT:-8901}:8001"
     volumes:
       - content_media:/app/media
 
@@ -100,12 +100,12 @@ services:
     build:
       context: "./FrontendAlumni"
       args:
-        VITE_API_BASE: ${FRONTEND_VITE_API_BASE:-http://localhost:8001/api}
-        VITE_API_ACCESS_URL: ${FRONTEND_VITE_API_ACCESS_URL:-http://localhost:8000/api/}
-        VITE_API_CONTENT_URL: ${FRONTEND_VITE_API_CONTENT_URL:-http://localhost:8001/api/}
-        VITE_WS_CONTENT_URL: ${FRONTEND_VITE_WS_CONTENT_URL:-ws://localhost:8001}
-        VITE_CONTENT_MEDIA_URL: ${FRONTEND_VITE_CONTENT_MEDIA_URL:-http://localhost:8001}
-        VITE_ACCESS_MEDIA_URL: ${FRONTEND_VITE_ACCESS_MEDIA_URL:-http://localhost:8000}
+        VITE_API_BASE: ${FRONTEND_VITE_API_BASE:-http://localhost:8901/api}
+        VITE_API_ACCESS_URL: ${FRONTEND_VITE_API_ACCESS_URL:-http://localhost:8900/api/}
+        VITE_API_CONTENT_URL: ${FRONTEND_VITE_API_CONTENT_URL:-http://localhost:8901/api/}
+        VITE_WS_CONTENT_URL: ${FRONTEND_VITE_WS_CONTENT_URL:-ws://localhost:8901}
+        VITE_CONTENT_MEDIA_URL: ${FRONTEND_VITE_CONTENT_MEDIA_URL:-http://localhost:8901}
+        VITE_ACCESS_MEDIA_URL: ${FRONTEND_VITE_ACCESS_MEDIA_URL:-http://localhost:8900}
     restart: unless-stopped
     depends_on:
       access-api:
@@ -113,7 +113,7 @@ services:
       content-api:
         condition: service_started
     ports:
-      - "${FRONTEND_PUBLIC_PORT:-8080}:80"
+      - "${FRONTEND_PUBLIC_PORT:-8980}:80"
 
 volumes:
   postgres_data:

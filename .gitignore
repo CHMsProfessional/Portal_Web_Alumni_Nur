@@ -45,8 +45,6 @@ postgres_data/
 
 # Local backups of nested repositories
 .git-frontend-backup/
-<<<<<<< Updated upstream
-=======
 
 # Downloaded diagnostics and temporary investigation artifacts
 alumni_logs/
@@ -60,4 +58,3 @@ FrontendAlumni/content-logs/
 content-*.zip
 /recorrer_estructura.py
 /generarVCF_para_encuestas.py
->>>>>>> Stashed changes

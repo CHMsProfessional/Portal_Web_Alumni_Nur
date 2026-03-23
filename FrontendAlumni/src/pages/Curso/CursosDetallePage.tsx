@@ -7,6 +7,7 @@ import "./CursosDetallePage.css";
 import { CursoService } from "../../services/alumni/CursoService";
 import UserAlumniService from "../../services/alumni/UserAlumniService";
 import { Curso } from "../../models/Curso/Curso";
+import { resolveMediaSrc } from "../../utils/media";
 
 import {
     FaArrowLeft,
@@ -25,6 +26,7 @@ import {
 } from "react-icons/fa";
 
 const placeholderImg = "/placeholder-comunidad.png";
+const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
 
 type CursoUsuarioDetalle = {
     id?: number;
@@ -423,7 +425,7 @@ const CursoDetallePage = () => {
 
                             <div className="curso-detalle-hero__imageCard">
                                 <img
-                                    src={curso.imagen_portada || placeholderImg}
+                                    src={resolveMediaSrc(CONTENT_MEDIA_URL, curso.imagen_portada, placeholderImg)}
                                     alt={curso.titulo || "Curso"}
                                     className="curso-detalle-hero__image"
                                 />
