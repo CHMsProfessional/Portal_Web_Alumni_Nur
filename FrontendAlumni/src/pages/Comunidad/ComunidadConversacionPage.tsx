@@ -248,13 +248,13 @@ const ComunidadConversacionPage = () => {
             setConversacion((prev) =>
                 prev
                     ? {
-                          ...prev,
-                          estado: "CERRADA",
-                          activa: true,
-                          puede_escribir: false,
-                          puede_cerrar: false,
-                          puede_reabrir: true,
-                      }
+                        ...prev,
+                        estado: "CERRADA",
+                        activa: true,
+                        puede_escribir: false,
+                        puede_cerrar: false,
+                        puede_reabrir: true,
+                    }
                     : prev
             );
             setSocketStatus("closed");
@@ -266,13 +266,13 @@ const ComunidadConversacionPage = () => {
             setConversacion((prev) =>
                 prev
                     ? {
-                          ...prev,
-                          estado: "ABIERTA",
-                          activa: true,
-                          puede_escribir: true,
-                          puede_cerrar: true,
-                          puede_reabrir: false,
-                      }
+                        ...prev,
+                        estado: "ABIERTA",
+                        activa: true,
+                        puede_escribir: true,
+                        puede_cerrar: true,
+                        puede_reabrir: false,
+                    }
                     : prev
             );
             setSocketStatus("connected");
@@ -328,13 +328,13 @@ const ComunidadConversacionPage = () => {
                 setConversacion((prev) =>
                     prev
                         ? {
-                              ...prev,
-                              ultimo_mensaje_at: mensaje.fecha_envio ?? prev.ultimo_mensaje_at,
-                              total_mensajes: Math.max(
-                                  (prev.total_mensajes ?? 0) + 1,
-                                  mensajes.length + 1
-                              ),
-                          }
+                            ...prev,
+                            ultimo_mensaje_at: mensaje.fecha_envio ?? prev.ultimo_mensaje_at,
+                            total_mensajes: Math.max(
+                                (prev.total_mensajes ?? 0) + 1,
+                                mensajes.length + 1
+                            ),
+                        }
                         : prev
                 );
             },
@@ -844,8 +844,8 @@ const ComunidadConversacionPage = () => {
                                             {puedeCerrar
                                                 ? "Puedes cerrar"
                                                 : puedeReabrir
-                                                  ? "Puedes reabrir"
-                                                  : "Solo lectura"}
+                                                    ? "Puedes reabrir"
+                                                    : "Solo lectura"}
                                         </span>
                                     </div>
 
@@ -854,7 +854,7 @@ const ComunidadConversacionPage = () => {
                                         <span className="value">
                                             {formatDateTime(
                                                 conversacion.ultimo_mensaje_at ||
-                                                    conversacion.fecha_creacion
+                                                conversacion.fecha_creacion
                                             )}
                                         </span>
                                     </div>
@@ -911,11 +911,10 @@ const ComunidadConversacionPage = () => {
                                                     mensaje.id ??
                                                     `${mensaje.fecha_envio}-${mensaje.contenido}`
                                                 }
-                                                className={`comunidad-conversacion-message ${
-                                                    isMine
+                                                className={`comunidad-conversacion-message ${isMine
                                                         ? "comunidad-conversacion-message--mine"
                                                         : "comunidad-conversacion-message--other"
-                                                }`}
+                                                    }`}
                                             >
                                                 <div className="comunidad-conversacion-message__meta">
                                                     <span className="author">

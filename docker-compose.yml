@@ -32,16 +32,28 @@ services:
     build:
       context: ./AlumniAPI
     restart: unless-stopped
-    env_file:
-      - ./AlumniAPI/.env
     environment:
+      PORT: ${ACCESS_PORT:-8000}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${ACCESS_DB_NAME:-AlumniDBAccess}
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-unsafe-secret-key}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
       CONTENT_API_URL: http://content-api:8001/api/
       CONTENT_API_BASE_URL: http://content-api:8001/
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,access-api
-      DJANGO_ALLOWED_ORIGINS: http://localhost:${FRONTEND_PUBLIC_PORT:-8080}
+      DJANGO_ALLOWED_HOSTS: ${ACCESS_DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,access-api}
+      DJANGO_ALLOWED_ORIGINS: ${DJANGO_ALLOWED_ORIGINS:-http://localhost:${FRONTEND_PUBLIC_PORT:-8080}}
+
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,18 +64,26 @@ services:
     build:
       context: ./ContenidoAlumniApi
     restart: unless-stopped
-    env_file:
-      - ./ContenidoAlumniApi/.env
     environment:
+      PORT: ${CONTENT_PORT:-8001}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${CONTENT_DB_NAME:-AlumniDB}
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-unsafe-secret-key}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_USE_SSL: ${REDIS_USE_SSL:-False}
+      REDIS_CACHE_DB: ${REDIS_CACHE_DB:-1}
+      REDIS_CHANNEL_DB: ${REDIS_CHANNEL_DB:-0}
       ACCESS_API_URL: http://access-api:8000/api/
       ACCESS_API_BASE_URL: http://access-api:8000/
-      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,content-api
-      DJANGO_ALLOWED_ORIGINS: http://localhost:${FRONTEND_PUBLIC_PORT:-8080}
+      DJANGO_ALLOWED_HOSTS: ${CONTENT_DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,content-api}
+      DJANGO_ALLOWED_ORIGINS: ${DJANGO_ALLOWED_ORIGINS:-http://localhost:${FRONTEND_PUBLIC_PORT:-8080}}
     depends_on:
       postgres:
         condition: service_healthy

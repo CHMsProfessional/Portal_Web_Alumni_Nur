@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: alumni-portal
+metadata:
+  template: alumni-portal@1.0.0
+
+infra:
+  provider: bicep
+  path: ./infra
+  module: main
+  parameters:
+    projectName: ${projectName}
+    environment: ${environment}
+    environmentName: ${AZURE_ENV_NAME}
+    location: ${location}
+    postgresqlLocation: ${postgresqlLocation}
+    postgresqlAdminPassword: ${postgresqlAdminPassword}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectName": {
+      "value": "${projectName}"
+    },
+    "environment": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${location}"
+    },
+    "postgresqlLocation": {
+      "value": "${postgresqlLocation}"
+    },
+    "postgresqlAdminPassword": {
+      "value": "${postgresqlAdminPassword}"
+    },
+    "applyInfrastructureChanges": {
+      "value": "${applyInfrastructureChanges}"
+    },
+    "applyImageChanges": {
+      "value": "${applyImageChanges}"
+    },
+    "alumniApiImageTag": {
+      "value": "${alumniApiImageTag}"
+    },
+    "contentApiImageTag": {
+      "value": "${contentApiImageTag}"
+    }
+  }
+}
