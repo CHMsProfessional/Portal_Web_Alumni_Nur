@@ -174,12 +174,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
 
-VAR_DJANGO_ALLOWED_ORIGINS = os.getenv("DJANGO_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
-VAR_DJANGO_ALLOWED_ORIGINS = [origin.strip() for origin in VAR_DJANGO_ALLOWED_ORIGINS.split(",") if origin.strip()]
+def _env_bool(name: str, default: str = "False") -> bool:
+    return os.getenv(name, default).lower() in ("1", "true", "yes", "y", "on")
 
-print("CORS_ALLOWED_ORIGINS:", VAR_DJANGO_ALLOWED_ORIGINS)
 
-CORS_ALLOWED_ORIGINS = VAR_DJANGO_ALLOWED_ORIGINS 
+_raw_allowed_origins = os.getenv(
+    "DJANGO_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+).strip()
+_allowed_origins = [
+    origin.strip() for origin in _raw_allowed_origins.split(",") if origin.strip()
+]
+
+# Support a dev-friendly wildcard. django-cors-headers does NOT accept "*" in
+# CORS_ALLOWED_ORIGINS, so we map it to CORS_ALLOW_ALL_ORIGINS.
+CORS_ALLOW_ALL_ORIGINS = _env_bool("DJANGO_CORS_ALLOW_ALL_ORIGINS", "False") or (
+    _raw_allowed_origins == "*" or "*" in _allowed_origins
+)
+
+if CORS_ALLOW_ALL_ORIGINS:
+    CORS_ALLOWED_ORIGINS = []
+    print("CORS_ALLOW_ALL_ORIGINS: True")
+else:
+    CORS_ALLOWED_ORIGINS = _allowed_origins
+    print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
 
 
 CORS_ALLOW_METHODS = (
