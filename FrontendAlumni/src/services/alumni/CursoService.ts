@@ -12,12 +12,6 @@ export interface CursoActionResponse {
     error?: string;
 }
 
-const buildMultipartHeaders = (data: FormData | unknown) => {
-    return data instanceof FormData
-        ? { "Content-Type": "multipart/form-data" }
-        : undefined;
-};
-
 const assertPositiveInteger = (value: number, fieldName: string): void => {
     if (!Number.isInteger(value) || value <= 0) {
         throw new Error(`${fieldName} debe ser un entero positivo válido.`);
@@ -37,17 +31,13 @@ export const CursoService = {
     },
 
     async create(data: FormData | CursoRequest): Promise<Curso> {
-        const response = await api.post<Curso>("curso/", data, {
-            headers: buildMultipartHeaders(data),
-        });
+        const response = await api.post<Curso>("curso/", data);
         return response.data;
     },
 
     async update(id: number, data: FormData | Partial<CursoRequest>): Promise<Curso> {
         assertPositiveInteger(id, "id");
-        const response = await api.put<Curso>(`curso/${id}/`, data, {
-            headers: buildMultipartHeaders(data),
-        });
+        const response = await api.put<Curso>(`curso/${id}/`, data);
         return response.data;
     },
 

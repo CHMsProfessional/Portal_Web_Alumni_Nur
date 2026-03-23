@@ -8,6 +8,7 @@ import { CursoRequest } from "../../models/Curso/CursoRequest";
 import { Curso } from "../../models/Curso/Curso";
 import { CursoService } from "../../services/alumni/CursoService";
 import { Routes } from "../../routes/CONSTANTS";
+import { resolveMediaSrc } from "../../utils/media";
 
 import {
     FaArrowLeft,
@@ -82,6 +83,73 @@ const getFileNameFromUrl = (value?: string | null): string => {
     }
 };
 
+const extractInvalidInscritoIds = (error: unknown): number[] => {
+    const anyErr = error as {
+        response?: { data?: unknown };
+    };
+
+    const data = anyErr?.response?.data;
+    const messages: string[] = [];
+
+    const pushIfString = (value: unknown): void => {
+        if (typeof value === "string" && value.trim()) {
+            messages.push(value);
+        }
+    };
+
+    pushIfString(data);
+
+    if (typeof data === "object" && data !== null) {
+        const maybeData = data as Record<string, unknown>;
+
+        const inscritosField = maybeData.inscritos;
+
+        pushIfString(inscritosField);
+
+        if (Array.isArray(inscritosField)) {
+            for (const item of inscritosField) {
+                pushIfString(item);
+            }
+        }
+
+        if (typeof inscritosField === "object" && inscritosField !== null) {
+            const nested = inscritosField as Record<string, unknown>;
+            const nestedInscritos = nested.inscritos;
+            pushIfString(nestedInscritos);
+
+            if (Array.isArray(nestedInscritos)) {
+                for (const item of nestedInscritos) {
+                    pushIfString(item);
+                }
+            }
+        }
+
+        try {
+            messages.push(JSON.stringify(data));
+        } catch {
+            // ignore
+        }
+    }
+
+    const ids = new Set<number>();
+    const marker = /IDs\s+inv[aá]lidos\s+o\s+no\s+encontrados\s*:\s*([0-9,\s]+)/i;
+
+    for (const message of messages) {
+        const match = message.match(marker);
+        if (!match?.[1]) continue;
+
+        const digits = match[1].match(/\d+/g) ?? [];
+        for (const raw of digits) {
+            const parsed = Number(raw);
+            if (Number.isInteger(parsed) && parsed > 0) {
+                ids.add(parsed);
+            }
+        }
+    }
+
+    return Array.from(ids);
+};
+
 const CursoFormPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -107,6 +175,8 @@ const CursoFormPage = () => {
     const [previewImg, setPreviewImg] = useState<string | null>(null);
     const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
+
+    const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
 
     useEffect(() => {
         const cargarCurso = async (): Promise<void> => {
@@ -195,7 +265,25 @@ const CursoFormPage = () => {
         return null;
     };
 
-    const buildPayload = (): FormData => {
+    const buildJsonPayload = (overrideInscritos?: number[]): CursoRequest => {
+        const payload: CursoRequest = {
+            titulo: form.titulo.trim(),
+            descripcion: form.descripcion?.trim() || "",
+            responsable: form.responsable.trim(),
+            modalidad: form.modalidad,
+            estado: form.estado,
+            fecha_inicio: form.fecha_inicio,
+            inscritos: overrideInscritos ?? (form.inscritos ?? []),
+        };
+
+        if (form.fecha_fin) {
+            payload.fecha_fin = form.fecha_fin;
+        }
+
+        return payload;
+    };
+
+    const buildFormDataPayload = (overrideInscritos?: number[]): FormData => {
         const data = new FormData();
 
         data.append("titulo", form.titulo.trim());
@@ -204,10 +292,16 @@ const CursoFormPage = () => {
         data.append("modalidad", form.modalidad);
         data.append("estado", form.estado);
         data.append("fecha_inicio", form.fecha_inicio);
-        data.append("fecha_fin", form.fecha_fin || "");
 
-        const inscritos = form.inscritos ?? [];
-        data.append("inscritos", JSON.stringify(inscritos));
+        if (form.fecha_fin) {
+            data.append("fecha_fin", form.fecha_fin);
+        }
+
+        // DRF + ArrayField: para multipart, enviamos la lista repitiendo la key.
+        // (ListField/ArrayField puede leerlo desde QueryDict.getlist)
+        for (const userId of overrideInscritos ?? (form.inscritos ?? [])) {
+            data.append("inscritos", String(userId));
+        }
 
         if (imageFile) {
             data.append("imagen_portada", imageFile);
@@ -226,20 +320,62 @@ const CursoFormPage = () => {
             return;
         }
 
-        try {
-            setLoading(true);
-
-            const payload = buildPayload();
+        const trySave = async (overrideInscritos?: number[]): Promise<void> => {
+            const payload = imageFile
+                ? buildFormDataPayload(overrideInscritos)
+                : buildJsonPayload(overrideInscritos);
 
             if (isEdit && id) {
                 await CursoService.update(Number(id), payload);
             } else {
                 await CursoService.create(payload);
             }
+        };
 
+        try {
+            setLoading(true);
+
+            await trySave();
             navigate(resolveCursosListRoute());
         } catch (submitError) {
             console.error("Error al guardar el curso.", submitError);
+
+            const invalidIds = extractInvalidInscritoIds(submitError);
+
+            if (invalidIds.length > 0) {
+                const shouldSanitize = window.confirm(
+                    `Se encontraron usuarios inscritos que ya no existen (${invalidIds.join(
+                        ", "
+                    )}).\n\n¿Deseas desinscribirlos automáticamente y guardar de nuevo?`
+                );
+
+                if (shouldSanitize) {
+                    const invalidSet = new Set(invalidIds);
+                    const sanitizedInscritos = (form.inscritos ?? []).filter(
+                        (userId) => !invalidSet.has(userId)
+                    );
+
+                    try {
+                        await trySave(sanitizedInscritos);
+                        setForm((prev) => ({
+                            ...prev,
+                            inscritos: sanitizedInscritos,
+                        }));
+                        window.alert(
+                            `Se desinscribieron automáticamente los usuarios inexistentes: ${invalidIds.join(
+                                ", "
+                            )}.`
+                        );
+                        navigate(resolveCursosListRoute());
+                        return;
+                    } catch (retryError) {
+                        console.error("Error al reintentar guardar con inscritos saneados.", retryError);
+                        setError(getErrorMessage(retryError));
+                        return;
+                    }
+                }
+            }
+
             setError(getErrorMessage(submitError));
         } finally {
             setLoading(false);
@@ -546,7 +682,7 @@ const CursoFormPage = () => {
                                         <div className="curso-form-preview">
                                             {previewImg ? (
                                                 <img
-                                                    src={previewImg}
+                                                    src={resolveMediaSrc(CONTENT_MEDIA_URL, previewImg, "")}
                                                     alt={form.titulo || "Vista previa del curso"}
                                                     className="curso-form-preview__image"
                                                 />

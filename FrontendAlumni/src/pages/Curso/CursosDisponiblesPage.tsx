@@ -24,8 +24,10 @@ import { CursoService } from "../../services/alumni/CursoService";
 import UserAlumniService from "../../services/alumni/UserAlumniService";
 import { Curso } from "../../models/Curso/Curso";
 import { Routes } from "../../routes/CONSTANTS";
+import { resolveMediaSrc } from "../../utils/media";
 
 const placeholderImg = "/placeholder-comunidad.png";
+const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
 
 const formatearFecha = (fecha?: string | null): string => {
     if (!fecha) return "No definida";
@@ -462,7 +464,7 @@ const CursosDisponiblesPage = () => {
                                     >
                                         <div className="curso-disponible-card__media">
                                             <img
-                                                src={curso.imagen_portada || placeholderImg}
+                                                src={resolveMediaSrc(CONTENT_MEDIA_URL, curso.imagen_portada, placeholderImg)}
                                                 alt={curso.titulo || "Curso"}
                                                 className="curso-disponible-card__image"
                                             />

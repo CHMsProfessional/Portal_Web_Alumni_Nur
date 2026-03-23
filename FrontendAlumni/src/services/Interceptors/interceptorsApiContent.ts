@@ -19,17 +19,11 @@ let refreshPromise: Promise<string> | null = null;
 const authApi: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_ACCESS_URL,
     timeout: 5000,
-    headers: {
-        "Content-Type": "application/json",
-    },
 });
 
 const api: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_CONTENT_URL,
     timeout: 10000,
-    headers: {
-        "Content-Type": "application/json",
-    },
 });
 
 function redirectToLogin(): void {

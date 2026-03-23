@@ -13,7 +13,36 @@ Repositorio monorepo con tres componentes principales:
 
 ## Configuracion inicial
 
-Crear los archivos de entorno a partir de sus ejemplos:
+Este repo esta preparado para que (recien clonado) puedas correr `docker compose up` sin crear archivos `.env`.
+
+Si quieres personalizar puertos/credenciales y variables, crea un unico archivo de entorno en la raiz:
+
+Linux/macOS:
+
+```bash
+cp .env.example .env
+```
+
+Windows (cmd):
+
+```bat
+copy .env.example .env
+```
+
+Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Notas:
+
+- Los `.env.example` dentro de cada componente se mantienen como referencia, pero **no son obligatorios** para Docker Compose.
+- No versionar `.env` (esta en `.gitignore`).
+
+### (Opcional) Variables por componente
+
+Si prefieres mantener `.env` por componente (por ejemplo para desarrollo fuera de Docker), puedes crearlos a partir de los ejemplos:
 
 ```bash
 copy .env.example .env
@@ -37,6 +66,12 @@ Copy-Item FrontendAlumni/.env.example FrontendAlumni/.env
 docker compose up --build
 ```
 
+Para bajar todo (incluyendo volúmenes de BD/media):
+
+```bash
+docker compose down -v
+```
+
 Servicios por defecto:
 
 - Frontend: `http://localhost:8080`
@@ -57,6 +92,8 @@ Se excluyen archivos locales o generados como:
 - `media`
 - caches, logs y `__pycache__`
 - archivos generados `estructura_src_*.txt`
+
+Tambien se excluyen utilidades con datos personales (por ejemplo `generarVCF_para_encuestas.py`).
 
 ## Publicar en GitHub
 

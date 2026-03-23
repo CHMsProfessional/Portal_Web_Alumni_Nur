@@ -7,6 +7,7 @@ import "./CursosListPage.css";
 import { CursoService } from "../../services/alumni/CursoService";
 import { Curso } from "../../models/Curso/Curso";
 import { Routes } from "../../routes/CONSTANTS";
+import { resolveMediaSrc } from "../../utils/media";
 
 import {
     FaBook,
@@ -23,6 +24,7 @@ import {
 } from "react-icons/fa";
 
 const placeholderImg = "/placeholder-comunidad.png";
+const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
 
 const getEstadoTexto = (curso: Curso): string => {
     return curso.estado_display || curso.estado || "Sin estado";
@@ -66,7 +68,7 @@ const descripcionCorta = (texto?: string | null, max = 170): string => {
     if (limpio.length <= max) return limpio;
 
     return `${limpio.slice(0, max).trim()}...`;
-};
+}; 
 
 const parseDateValue = (fecha?: string | null): number => {
     if (!fecha) return Number.MAX_SAFE_INTEGER;
@@ -101,9 +103,9 @@ const resolveCursosDetalleRoute = (cursoId: number): string => {
     const routesAny = Routes as any;
 
     const fn =
-        routesAny?.ALUMNI?.CURSOS?.DETALLE_PARAM ||
-        routesAny?.CURSOS?.DETALLE_PARAM ||
-        routesAny?.CURSO?.DETALLE_PARAM;
+        routesAny?.ALUMNI?.CURSOS?.DETAIL_PARAM ||
+        routesAny?.CURSOS?.DETAIL_PARAM ||
+        routesAny?.CURSO?.DETAIL_PARAM;
 
     return typeof fn === "function" ? fn(cursoId) : `/cursos/${cursoId}`;
 };
@@ -399,7 +401,7 @@ const CursosListPage = () => {
                                     >
                                         <div className="curso-list-card__media">
                                             <img
-                                                src={curso.imagen_portada || placeholderImg}
+                                                src={resolveMediaSrc(CONTENT_MEDIA_URL, curso.imagen_portada, placeholderImg)}
                                                 alt={curso.titulo || "Curso"}
                                                 className="curso-list-card__image"
                                             />
