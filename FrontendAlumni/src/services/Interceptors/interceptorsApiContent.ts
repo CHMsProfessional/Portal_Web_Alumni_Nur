@@ -4,6 +4,7 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 import { AuthService } from "../alumni/AuthService";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
     _retry?: boolean;
@@ -17,12 +18,12 @@ type RefreshResponse = {
 let refreshPromise: Promise<string> | null = null;
 
 const authApi: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_ACCESS_URL,
+    baseURL: resolveEnvUrl(import.meta.env.VITE_API_ACCESS_URL),
     timeout: 5000,
 });
 
 const api: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_CONTENT_URL,
+    baseURL: resolveEnvUrl(import.meta.env.VITE_API_CONTENT_URL),
     timeout: 10000,
 });
 

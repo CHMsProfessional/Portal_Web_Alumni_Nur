@@ -37,9 +37,10 @@ import { UsuarioPerfil } from "../../models/Usuario/UsuarioPerfil";
 import { ComunidadService } from "../../services/alumni/ComunidadService";
 import { ConversacionComunidadService } from "../../services/alumni/ConversacionComunidadService";
 import {UserAlumniService} from "../../services/alumni/UserAlumniService";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 const placeholderImg = "/placeholder-comunidad.png";
-const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL ?? "";
+const CONTENT_MEDIA_URL = resolveEnvUrl(import.meta.env.VITE_CONTENT_MEDIA_URL ?? "");
 
 const getErrorMessage = (error: unknown): string => {
     if (

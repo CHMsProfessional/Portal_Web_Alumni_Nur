@@ -8,6 +8,7 @@ import { CursoService } from "../../services/alumni/CursoService";
 import UserAlumniService from "../../services/alumni/UserAlumniService";
 import { Curso } from "../../models/Curso/Curso";
 import { resolveMediaSrc } from "../../utils/media";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 import {
     FaArrowLeft,
@@ -26,7 +27,7 @@ import {
 } from "react-icons/fa";
 
 const placeholderImg = "/placeholder-comunidad.png";
-const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
+const CONTENT_MEDIA_URL = resolveEnvUrl(import.meta.env.VITE_CONTENT_MEDIA_URL || "");
 
 type CursoUsuarioDetalle = {
     id?: number;

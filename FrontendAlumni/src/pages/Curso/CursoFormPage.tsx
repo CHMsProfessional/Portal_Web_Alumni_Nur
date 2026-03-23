@@ -9,6 +9,7 @@ import { Curso } from "../../models/Curso/Curso";
 import { CursoService } from "../../services/alumni/CursoService";
 import { Routes } from "../../routes/CONSTANTS";
 import { resolveMediaSrc } from "../../utils/media";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 import {
     FaArrowLeft,
@@ -176,7 +177,7 @@ const CursoFormPage = () => {
     const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
-    const CONTENT_MEDIA_URL = import.meta.env.VITE_CONTENT_MEDIA_URL || "";
+    const CONTENT_MEDIA_URL = resolveEnvUrl(import.meta.env.VITE_CONTENT_MEDIA_URL || "");
 
     useEffect(() => {
         const cargarCurso = async (): Promise<void> => {

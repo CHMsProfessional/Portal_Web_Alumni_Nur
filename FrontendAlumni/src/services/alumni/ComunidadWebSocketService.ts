@@ -1,5 +1,6 @@
 import { MensajeComunidad } from "../../models/Comunidad/MensajeComunidad";
 import { AuthService } from "./AuthService";
+import { resolveEnvUrl } from "../../utils/runtimeUrls";
 
 export interface WebSocketCallbacks {
     onMensaje: (mensaje: MensajeComunidad) => void;
@@ -40,7 +41,7 @@ export class ComunidadWebSocketService {
                   .replace(/^http/, "ws")
             : "";
 
-        const baseUrl = (configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, "");
+        const baseUrl = resolveEnvUrl(configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, "");
 
         if (!baseUrl) {
             throw new Error("VITE_WS_CONTENT_URL o VITE_API_CONTENT_URL debe estar configurado.");
