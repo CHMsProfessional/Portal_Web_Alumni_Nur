@@ -1,0 +1,2 @@
+# Convenience entrypoint: allows `pip install -r requirements.txt`
+-r src/requirements.txt

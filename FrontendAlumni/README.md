@@ -1,30 +1,58 @@
-# React + TypeScript + Vite
+# FrontendAlumni (Portal Web Alumni)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend en **React + TypeScript + Vite**.
 
-Currently, two official plugins are available:
+Este frontend consume:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `AlumniAPI` (Access API) para autenticación/usuarios.
+- `ContenidoAlumniApi` (Content API) para contenido, websockets y media.
 
-## Expanding the ESLint configuration
+## Requisitos
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Node.js 18+ (recomendado 20+)
+- npm
 
-- Configure the top-level `parserOptions` property like this:
+## Variables de entorno
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+El proyecto usa variables `VITE_*`.
+
+1) Crear `.env` (o `.env.local`) desde el ejemplo:
+
+Windows (cmd):
+
+```bat
+copy .env.example .env
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+2) Variables principales:
+
+- `VITE_API_BASE`: base de Content API (por defecto `http://localhost:8901/api`)
+- `VITE_API_ACCESS_URL`: Access API (por defecto `http://localhost:8900/api/`)
+- `VITE_API_CONTENT_URL`: Content API (por defecto `http://localhost:8901/api/`)
+- `VITE_WS_CONTENT_URL`: websocket hacia Content API (por defecto `ws://localhost:8901`)
+- `VITE_CONTENT_MEDIA_URL`: host base para servir `/media/...` (por defecto `http://localhost:8901`)
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev
+```
+
+Por defecto Vite sirve en `http://localhost:5173`.
+
+Si estás levantando las APIs con `docker compose` desde la raíz del repo, mantené las URLs en `.env` apuntando a `8900/8901`.
+
+## Build (producción)
+
+```bash
+npm run build
+```
+
+En Docker, el build se sirve con Nginx (ver `Dockerfile` y `docker/nginx.conf`).

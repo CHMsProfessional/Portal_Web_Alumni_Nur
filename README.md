@@ -6,6 +6,10 @@ Repositorio monorepo con tres componentes principales:
 - `ContenidoAlumniApi`: API Django para contenido, websocket y media.
 - `FrontendAlumni`: frontend React + Vite.
 
+Componente adicional (opcional):
+
+- `AgenteFoundry/foundry-agentv2`: plantilla de agente para Microsoft Foundry (proyecto separado; no es requerido para correr el portal con `docker compose`).
+
 ## Requisitos
 
 - Docker
@@ -74,10 +78,61 @@ docker compose down -v
 
 Servicios por defecto:
 
-- Frontend: `http://localhost:8080`
-- Access API: `http://localhost:8000`
-- Content API: `http://localhost:8001`
-- PostgreSQL: `localhost:5432`
+- Frontend (Nginx): `http://localhost:8980`
+- Access API: `http://localhost:8900`
+- Content API: `http://localhost:8901`
+- PostgreSQL (host): `localhost:${POSTGRES_PUBLIC_PORT:-5432}`
+
+Rutas típicas:
+
+- Access API base: `http://localhost:8900/api/`
+- Content API base: `http://localhost:8901/api/`
+- Media (Content): `http://localhost:8901/media/`
+
+## Desarrollo local (sin Docker)
+
+Si prefieres correr servicios en tu máquina (útil para debug), cada API Django tiene su propio `requirements.txt`.
+
+Access API:
+
+```powershell
+cd AlumniAPI
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+python manage.py migrate
+python manage.py runserver 8000
+```
+
+Content API:
+
+```powershell
+cd ContenidoAlumniApi
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+python manage.py migrate
+python manage.py runserver 8001
+```
+
+Frontend:
+
+```powershell
+cd FrontendAlumni
+npm install
+copy .env.example .env
+npm run dev
+```
+
+Nota: en modo `npm run dev` el frontend corre en `http://localhost:5173`.
+
+## Despliegue a Azure (infra)
+
+- `infra/` contiene Bicep + scripts de despliegue.
+- `azure.yaml` permite usar `azd` (Azure Developer CLI).
+- Comandos frecuentes y troubleshooting en `infra/QUICK_REFERENCE.md`.
 
 ## Que se versiona
 
